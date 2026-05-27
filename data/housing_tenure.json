@@ -1,0 +1,67 @@
+{
+  "category": "Housing Trends",
+  "description": "Household tenure data from the Family Resources Survey (FRS), updated annually each March.",
+  "last_fetched": null,
+  "datasets": [
+    {
+      "id": "frs_tenure_pct",
+      "name": "Households by Tenure (%)",
+      "description": "Proportion of households by tenure type (owner-occupied, private rented, social rented etc.)",
+      "source": "FRS",
+      "ref": "Table 3.1",
+      "source_url": "https://www.gov.uk/government/collections/family-resources-survey--2",
+      "frequency": "Annual",
+      "nation": "UK + all devolved administrations (incl. England)",
+      "region": "Regional breakdown available from 2014/15 onwards",
+      "unit": "%",
+      "status": "active",
+      "latest": { "value": null, "period": "2023/24", "fetched_at": null },
+      "notes": "Published each March. Regional data available from 2014/15."
+    },
+    {
+      "id": "frs_length_of_residency",
+      "name": "Households by Length of Residency (%)",
+      "description": "Proportion of households by how long they have lived at their current address, by tenure",
+      "source": "FRS",
+      "ref": "Table 3.4",
+      "source_url": "https://www.gov.uk/government/collections/family-resources-survey--2",
+      "frequency": "Annual",
+      "nation": "UK",
+      "region": "None",
+      "unit": "%",
+      "status": "active",
+      "latest": { "value": null, "period": "2023/24", "fetched_at": null },
+      "notes": ""
+    },
+    {
+      "id": "frs_tenure_by_age",
+      "name": "Household Tenure by Age of Head of Household (%)",
+      "description": "Tenure breakdown by age group of the household reference person",
+      "source": "FRS",
+      "ref": "Table 3.7",
+      "source_url": "https://www.gov.uk/government/collections/family-resources-survey--2",
+      "frequency": "Annual",
+      "nation": "UK",
+      "region": "None",
+      "unit": "%",
+      "status": "active",
+      "latest": { "value": null, "period": "2023/24", "fetched_at": null },
+      "notes": "Selected years only — not all years available in full series."
+    },
+    {
+      "id": "frs_median_rent_mortgage",
+      "name": "Median Household Weekly Rent / Mortgage (£)",
+      "description": "Median weekly rent or mortgage payment by tenure type",
+      "source": "FRS",
+      "ref": "Table 3.8",
+      "source_url": "https://www.gov.uk/government/collections/family-resources-survey--2",
+      "frequency": "Annual",
+      "nation": "UK",
+      "region": "Regional breakdown from 2012/13 onwards",
+      "unit": "£/week",
+      "status": "active",
+      "latest": { "value": null, "period": "2023/24", "fetched_at": null },
+      "notes": "Owner occupier mortgage data available from 2012/13 onwards."
+    }
+  ]
+}
