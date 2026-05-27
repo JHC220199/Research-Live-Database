@@ -1,7 +1,7 @@
 {
   "category": "Macro-Economic Data",
   "description": "Key macroeconomic indicators from the ONS and Bank of England, updated monthly or quarterly.",
-  "last_fetched": "2026-05-27T23:37:00Z",
+  "last_fetched": "2026-05-27T23:50:45Z",
   "datasets": [
     {
       "id": "cpi_annual_rate",
@@ -15,9 +15,9 @@
       "unit": "%",
       "status": "active",
       "latest": {
-        "value": null,
-        "period": null,
-        "fetched_at": null
+        "value": "2.8",
+        "period": "Apr 2026",
+        "fetched_at": "2026-05-27T23:50:39Z"
       },
       "notes": ""
     },
@@ -33,9 +33,9 @@
       "unit": "index",
       "status": "active",
       "latest": {
-        "value": null,
-        "period": null,
-        "fetched_at": null
+        "value": "142.1",
+        "period": "Apr 2026",
+        "fetched_at": "2026-05-27T23:50:40Z"
       },
       "notes": ""
     },
@@ -51,9 +51,9 @@
       "unit": "%",
       "status": "active",
       "latest": {
-        "value": null,
-        "period": null,
-        "fetched_at": null
+        "value": "3.0",
+        "period": "Apr 2026",
+        "fetched_at": "2026-05-27T23:50:40Z"
       },
       "notes": ""
     },
@@ -69,9 +69,9 @@
       "unit": "index",
       "status": "active",
       "latest": {
-        "value": null,
-        "period": null,
-        "fetched_at": null
+        "value": "141.8",
+        "period": "Apr 2026",
+        "fetched_at": "2026-05-27T23:50:41Z"
       },
       "notes": ""
     },
@@ -123,9 +123,9 @@
       "unit": "%",
       "status": "active",
       "latest": {
-        "value": null,
-        "period": null,
-        "fetched_at": null
+        "value": "0.6",
+        "period": "Q1 2026",
+        "fetched_at": "2026-05-27T23:50:41Z"
       },
       "notes": "Uses 'first estimate' data — may be revised in subsequent releases."
     },
@@ -141,9 +141,9 @@
       "unit": "%",
       "status": "active",
       "latest": {
-        "value": null,
-        "period": null,
-        "fetched_at": null
+        "value": "1.1",
+        "period": "Q1 2026",
+        "fetched_at": "2026-05-27T23:50:42Z"
       },
       "notes": ""
     },
@@ -213,9 +213,9 @@
       "unit": "£/week",
       "status": "active",
       "latest": {
-        "value": null,
-        "period": null,
-        "fetched_at": null
+        "value": "239.7",
+        "period": "Mar 2026",
+        "fetched_at": "2026-05-27T23:50:42Z"
       },
       "notes": ""
     },
@@ -231,9 +231,9 @@
       "unit": "index",
       "status": "active",
       "latest": {
-        "value": null,
-        "period": null,
-        "fetched_at": null
+        "value": "110.4",
+        "period": "Mar 2026",
+        "fetched_at": "2026-05-27T23:50:43Z"
       },
       "notes": "This data series changes significantly — always verify historic values."
     },
@@ -249,9 +249,9 @@
       "unit": "%",
       "status": "active",
       "latest": {
-        "value": null,
-        "period": null,
-        "fetched_at": null
+        "value": "0.3",
+        "period": "Mar 2026",
+        "fetched_at": "2026-05-27T23:50:43Z"
       },
       "notes": ""
     },
