@@ -1,7 +1,7 @@
 {
   "category": "English Housing Survey",
   "description": "Housing stock and household condition data from the English Housing Survey (EHS), updated annually. Note: some data collected by calendar year, other data by financial year.",
-  "last_fetched": null,
+  "last_fetched": "2026-05-27T23:37:07Z",
   "datasets": [
     {
       "id": "ehs_dwellings_vacant",
@@ -15,7 +15,11 @@
       "region": "None",
       "unit": "dwellings (000s)",
       "status": "active",
-      "latest": { "value": null, "period": "2023", "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": "2025",
+        "fetched_at": "2026-05-27T23:37:07Z"
+      },
       "notes": "Includes private rented sector estimates. Published separately from main EHS."
     },
     {
@@ -30,7 +34,11 @@
       "region": "None",
       "unit": "households (000s)",
       "status": "active",
-      "latest": { "value": null, "period": "2023/24", "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": "2025",
+        "fetched_at": "2026-05-27T23:37:07Z"
+      },
       "notes": ""
     },
     {
@@ -45,7 +53,11 @@
       "region": "None",
       "unit": "%",
       "status": "active",
-      "latest": { "value": null, "period": "2023/24", "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": "2025",
+        "fetched_at": "2026-05-27T23:37:07Z"
+      },
       "notes": ""
     },
     {
@@ -60,7 +72,11 @@
       "region": "English regions",
       "unit": "%",
       "status": "active",
-      "latest": { "value": null, "period": "2024/25", "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": "2025",
+        "fetched_at": "2026-05-27T23:37:07Z"
+      },
       "notes": "Households Report: Profile of Households chapter."
     },
     {
@@ -75,7 +91,11 @@
       "region": "London / England excl. London",
       "unit": "£/week",
       "status": "active",
-      "latest": { "value": null, "period": "2024/25", "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": "2025",
+        "fetched_at": "2026-05-27T23:37:07Z"
+      },
       "notes": "Households Report: Profile of Households chapter."
     },
     {
@@ -90,7 +110,11 @@
       "region": "London / England excl. London",
       "unit": "£/week",
       "status": "active",
-      "latest": { "value": null, "period": "2024/25", "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": "2025",
+        "fetched_at": "2026-05-27T23:37:07Z"
+      },
       "notes": ""
     },
     {
@@ -105,7 +129,11 @@
       "region": "None",
       "unit": "%",
       "status": "active",
-      "latest": { "value": null, "period": "2024/25", "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": "2025",
+        "fetched_at": "2026-05-27T23:37:07Z"
+      },
       "notes": ""
     },
     {
@@ -120,7 +148,11 @@
       "region": "None",
       "unit": "%",
       "status": "active",
-      "latest": { "value": null, "period": "2024", "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": "2025",
+        "fetched_at": "2026-05-27T23:37:07Z"
+      },
       "notes": "Headline report: Housing Stock tables. Full trend data available but limited years published."
     },
     {
@@ -135,7 +167,11 @@
       "region": "None",
       "unit": "%",
       "status": "active",
-      "latest": { "value": null, "period": "2024", "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": "2025",
+        "fetched_at": "2026-05-27T23:37:07Z"
+      },
       "notes": "Limited years published in trend data."
     },
     {
@@ -150,7 +186,11 @@
       "region": "None",
       "unit": "%",
       "status": "active",
-      "latest": { "value": null, "period": "2024", "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": "2025",
+        "fetched_at": "2026-05-27T23:37:07Z"
+      },
       "notes": "Headline report: Housing Stock tables."
     },
     {
@@ -165,7 +205,11 @@
       "region": "None",
       "unit": "%",
       "status": "active",
-      "latest": { "value": null, "period": "2024", "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": "2025",
+        "fetched_at": "2026-05-27T23:37:07Z"
+      },
       "notes": "Headline report: Housing Stock tables."
     },
     {
@@ -180,7 +224,11 @@
       "region": "None",
       "unit": "%",
       "status": "active",
-      "latest": { "value": null, "period": "2024", "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": "2025",
+        "fetched_at": "2026-05-27T23:37:07Z"
+      },
       "notes": "Housing Stock Annex. Limited years published."
     },
     {
@@ -195,7 +243,11 @@
       "region": "None",
       "unit": "%",
       "status": "active",
-      "latest": { "value": null, "period": "2024", "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": "2025",
+        "fetched_at": "2026-05-27T23:37:07Z"
+      },
       "notes": "Individual years only (2007–2024 in annual steps)."
     }
   ]

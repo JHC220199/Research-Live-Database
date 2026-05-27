@@ -1,7 +1,7 @@
 {
   "category": "Dwellings",
   "description": "New dwelling completions and starts by tenure, from MHCLG (England) and Stats Wales (Wales).",
-  "last_fetched": null,
+  "last_fetched": "2026-05-27T23:37:04Z",
   "datasets": [
     {
       "id": "mhclg_completions_private",
@@ -15,7 +15,11 @@
       "region": "None",
       "unit": "dwellings",
       "status": "active",
-      "latest": { "value": null, "period": "2025 Q3", "fetched_at": null },
+      "latest": {
+        "value": "29700",
+        "period": "2025 Q4",
+        "fetched_at": "2026-05-27T23:37:02Z"
+      },
       "notes": "Annual data from 1969; quarterly from 2000 Q1."
     },
     {
@@ -30,7 +34,11 @@
       "region": "None",
       "unit": "dwellings",
       "status": "active",
-      "latest": { "value": null, "period": "2025 Q3", "fetched_at": null },
+      "latest": {
+        "value": "11160",
+        "period": "2025 Q4",
+        "fetched_at": "2026-05-27T23:37:02Z"
+      },
       "notes": ""
     },
     {
@@ -45,7 +53,11 @@
       "region": "None",
       "unit": "dwellings",
       "status": "active",
-      "latest": { "value": null, "period": "2025 Q3", "fetched_at": null },
+      "latest": {
+        "value": "720",
+        "period": "2025 Q4",
+        "fetched_at": "2026-05-27T23:37:02Z"
+      },
       "notes": ""
     },
     {
@@ -60,7 +72,11 @@
       "region": "None",
       "unit": "dwellings",
       "status": "active",
-      "latest": { "value": null, "period": "2025 Q3", "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": "2025 Q3",
+        "fetched_at": null
+      },
       "notes": ""
     },
     {
@@ -75,7 +91,11 @@
       "region": "Local authority breakdown available",
       "unit": "dwellings",
       "status": "active",
-      "latest": { "value": null, "period": "2025-26 Q2 (Jul-Sep)", "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": "2025-26 Q2 (Jul-Sep)",
+        "fetched_at": null
+      },
       "notes": "Annual data from 2000; quarterly from 2010."
     },
     {
@@ -90,7 +110,11 @@
       "region": "Local authority breakdown available",
       "unit": "dwellings",
       "status": "active",
-      "latest": { "value": null, "period": "2025-26 Q2 (Jul-Sep)", "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": "2025-26 Q2 (Jul-Sep)",
+        "fetched_at": null
+      },
       "notes": ""
     }
   ]
