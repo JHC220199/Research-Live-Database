@@ -59,9 +59,8 @@ ONS_PATHS = {
     "K54U": "employmentandlabourmarket/peopleinwork/earningsandworkinghours/timeseries/k54u",
     "A2FD": "employmentandlabourmarket/peopleinwork/earningsandworkinghours/timeseries/a2fd",
     "A3WV": "employmentandlabourmarket/peopleinwork/earningsandworkinghours/timeseries/a3wv",
-    # PIPR — Price Index of Private Rents (replaced IPHRP from Jan 2025)
-    "CZOH": "economy/inflationandpriceindices/timeseries/czoh",   # UK 12-month % change
-    "CZOF": "economy/inflationandpriceindices/timeseries/czof",   # UK index (Jan 2015=100)
+    # PIPR — Price Index of Private Rents (standalone dataset, CDIDs not available via MM23)
+    # NOTE: PIPR is fetched via fetch_ons_pipr_uk() which downloads the published data file.
 }
  
  
@@ -277,25 +276,29 @@ def fetch_mhclg_table213() -> dict | None:
  
         rows = list(ws.iter_rows(values_only=True))
  
-        # Find header row containing tenure column labels
+        # Find header row containing tenure column labels.
+        # Table 213 has columns: Period | ...Starts... | All Starts | ...Completions... | All Completions | Notes
+        # We want the COMPLETIONS columns only (they come after the Starts block).
         col_map = {}
         header_idx = None
         for i, row in enumerate(rows):
             row_text = " ".join(str(c).lower() for c in row if c)
-            if "private" in row_text and ("total" in row_text or "housing" in row_text):
+            if "private" in row_text and "completion" in row_text:
                 header_idx = i
                 for j, cell in enumerate(row):
                     if not cell:
                         continue
                     s = str(cell).lower()
-                    if "private" in s and "enterprise" in s:
+                    # Skip any starts columns — we only want completions
+                    if "start" in s:
+                        continue
+                    if "private" in s and "enterprise" in s and "completion" in s:
                         col_map["private"] = j
-                    elif "housing assoc" in s or "registered" in s or " rsl" in s:
+                    elif ("housing assoc" in s or "registered" in s or " rsl" in s) and "completion" in s:
                         col_map["ha"] = j
-                    elif "local auth" in s:
+                    elif "local auth" in s and "completion" in s:
                         col_map["la"] = j
-                    elif ("total" in s or "all tenure" in s or s.strip() == "all") \
-                            and not any(x in s for x in ["private", "housing", "local", "social", "rsl"]):
+                    elif ("all completion" in s or "total completion" in s or s.strip() == "total"):
                         col_map["total"] = j
                 if col_map:
                     break
@@ -397,10 +400,11 @@ def fetch_moj_possession() -> dict | None:
     """
     Fetch landlord possession statistics from MoJ / HMCTS.
  
-    Strategy:
-    1. Fetch the collection page to find the most recent publication URL
-    2. Visit that publication page to find the CSV zip download link
-    3. Download, extract, and parse the relevant CSV files
+    The MoJ publishes a CSV zip containing court-level data in long format:
+        Year, Quarter, possession_type, possession_action, court, region, value
+ 
+    We find the latest publication, download the zip, read the court-level CSV,
+    and aggregate national totals by summing across all courts for the latest quarter.
     """
     collection_url = (
         "https://www.gov.uk/government/collections/"
@@ -411,7 +415,7 @@ def fetch_moj_possession() -> dict | None:
         r.raise_for_status()
         soup = BeautifulSoup(r.text, "html.parser")
  
-        # Find the first (most recent) publication link in the Documents section
+        # Find the most recent publication link
         pub_url = None
         for link in soup.find_all("a", href=re.compile(
             r"/government/statistics/mortgage-and-landlord-possession-statistics-(?!earlier|guide)"
@@ -428,7 +432,7 @@ def fetch_moj_possession() -> dict | None:
  
         log(f"  MoJ: latest publication → {pub_url}")
  
-        # Visit the publication page and find the CSV zip
+        # Find the CSV zip on the publication page
         pr = SESSION.get(pub_url, timeout=20)
         pr.raise_for_status()
         psoup = BeautifulSoup(pr.text, "html.parser")
@@ -437,9 +441,7 @@ def fetch_moj_possession() -> dict | None:
         for link in psoup.find_all("a", href=re.compile(r"CSVs\.zip", re.I)):
             csv_zip_url = link["href"]
             break
- 
         if not csv_zip_url:
-            # Fallback: look for any zip file
             for link in psoup.find_all("a", href=re.compile(r"\.zip$", re.I)):
                 csv_zip_url = link["href"]
                 break
@@ -452,110 +454,131 @@ def fetch_moj_possession() -> dict | None:
         zr = SESSION.get(csv_zip_url, timeout=60)
         zr.raise_for_status()
  
-        return _parse_moj_csv_zip(zr.content)
+        return _parse_moj_court_csv(zr.content)
  
     except Exception as e:
         error(f"MoJ possession: {e}")
         return None
  
  
-def _parse_moj_csv_zip(zip_content: bytes) -> dict | None:
+def _parse_moj_court_csv(zip_content: bytes) -> dict | None:
     """
-    Parse the MoJ CSV zip and extract possession statistics.
+    Parse the MoJ court-level CSV (long format) and aggregate national totals.
  
-    The zip structure has changed over time.  We now use header-aware column
-    detection rather than relying on fixed table-number filenames.  Each CSV
-    file is inspected for keywords that identify the columns we need.
+    Expected CSV columns:
+        Year, Quarter, possession_type, possession_action, court, region, value
+ 
+    possession_type values: Accelerated_Landlord, Private_Landlord,
+                            Social_Landlord, Mortgage, Other
+    possession_action values: Claims, Outright_Orders, Suspended_Orders,
+                              Warrants, Repossessions, Other
+ 
+    We sum across all courts to get England & Wales national figures.
     """
-    result = {}
- 
     try:
         z = zipfile.ZipFile(io.BytesIO(zip_content))
         names = z.namelist()
         log(f"  MoJ zip contents: {names}")
  
+        # Find the court-level CSV
+        court_csv_name = None
         for name in names:
-            name_lower = name.lower()
-            if not name_lower.endswith(".csv"):
+            if "court" in name.lower() and name.lower().endswith(".csv"):
+                court_csv_name = name
+                break
+ 
+        if not court_csv_name:
+            warn("MoJ: court CSV not found in zip")
+            return None
+ 
+        rows = _read_csv_from_zip(z, court_csv_name)
+        if not rows:
+            return None
+ 
+        # Parse column positions from header
+        header = [h.strip().lower() for h in rows[0]]
+        def col(name): return next((i for i, h in enumerate(header) if name in h), None)
+ 
+        year_col   = col("year")
+        qtr_col    = col("quarter")
+        type_col   = col("possession_type") or col("type")
+        action_col = col("possession_action") or col("action")
+        value_col  = col("value")
+ 
+        if any(c is None for c in [year_col, qtr_col, type_col, action_col, value_col]):
+            warn(f"MoJ: unexpected CSV columns: {header}")
+            return None
+ 
+        # Find the latest quarter available
+        quarters = set()
+        for row in rows[1:]:
+            if len(row) > qtr_col and re.search(r"Q[1-4]", row[qtr_col], re.I):
+                quarters.add((row[year_col], row[qtr_col]))
+ 
+        if not quarters:
+            warn("MoJ: no quarterly data found")
+            return None
+ 
+        latest_year, latest_qtr = max(quarters, key=lambda x: (x[0], x[1]))
+        period = f"{latest_year} {latest_qtr}"
+        log(f"  MoJ: latest quarter = {period}")
+ 
+        # Aggregate by summing across all courts for the latest quarter
+        totals: dict[tuple, int] = {}
+        for row in rows[1:]:
+            if len(row) <= value_col:
                 continue
- 
-            rows = _read_csv_from_zip(z, name)
-            if not rows:
+            if row[year_col] != latest_year or row[qtr_col] != latest_qtr:
                 continue
+            key = (row[type_col], row[action_col])
+            try:
+                totals[key] = totals.get(key, 0) + int(float(row[value_col]))
+            except (ValueError, TypeError):
+                pass
  
-            # Find the header row (first row with more than one non-empty cell)
-            header_row_idx = None
-            header = []
-            for i, row in enumerate(rows):
-                non_empty = [c.strip() for c in row if c.strip()]
-                if len(non_empty) >= 2:
-                    header_row_idx = i
-                    header = [c.strip().lower() for c in row]
-                    break
+        log(f"  MoJ aggregated {len(totals)} (type, action) combinations")
  
-            if header_row_idx is None:
-                continue
+        def get(ptype, action):
+            return totals.get((ptype, action), 0)
  
-            # Build a map of keyword → column index from the header
-            col = {}
-            for j, h in enumerate(header):
-                if "claims issued" in h or (
-                        "claim" in h and "issue" in h and "landlord" not in h and "mortgage" not in h):
-                    col.setdefault("claims_issued", j)
-                if "landlord" in h and ("claim" in h or "issue" in h):
-                    col.setdefault("claims_prs", j)
-                if "accelerated" in h:
-                    col.setdefault("claims_accelerated", j)
-                if "bailiff" in h and "repossess" in h:
-                    col.setdefault("repossessions_bailiffs", j)
-                if "mean" in h and "week" in h:
-                    col.setdefault("mean_time_all", j)
-                if "median" in h and "week" in h:
-                    col.setdefault("median_time_all", j)
+        result = {}
  
-            if not col:
-                log(f"  MoJ: no recognised columns in {name} — headers: {header[:8]}")
-                continue
+        # Total landlord possession claims (all landlord types)
+        total_claims = (
+            get("Accelerated_Landlord", "Claims") +
+            get("Private_Landlord",     "Claims") +
+            get("Social_Landlord",      "Claims")
+        )
+        if total_claims:
+            result["claims_issued"] = {"value": str(total_claims), "period": period}
  
-            # Find the most recent quarterly data row
-            data_rows = rows[header_row_idx + 1:]
-            latest = _moj_latest_quarterly_row_by_cols(data_rows, col)
-            if latest:
-                for key, val_period in latest.items():
-                    if key not in result:
-                        result[key] = val_period
-                        log(f"  MoJ ({name}): {key} = {val_period}")
+        # Total landlord repossessions by bailiff
+        total_repos = (
+            get("Accelerated_Landlord", "Repossessions") +
+            get("Private_Landlord",     "Repossessions") +
+            get("Social_Landlord",      "Repossessions")
+        )
+        if total_repos:
+            result["repossessions_bailiffs"] = {"value": str(total_repos), "period": period}
+ 
+        # Private sector claims (private + accelerated landlords)
+        prs_claims = (
+            get("Private_Landlord",     "Claims") +
+            get("Accelerated_Landlord", "Claims")
+        )
+        if prs_claims:
+            result["claims_prs"] = {"value": str(prs_claims), "period": period}
+ 
+        # Accelerated procedure claims only
+        acc = get("Accelerated_Landlord", "Claims")
+        if acc:
+            result["claims_accelerated"] = {"value": str(acc), "period": period}
+ 
+        return result if result else None
  
     except Exception as e:
-        error(f"MoJ CSV parse: {e}")
+        error(f"MoJ court CSV parse: {e}")
         return None
- 
-    return result if result else None
- 
- 
-def _moj_latest_quarterly_row_by_cols(rows: list, col_map: dict) -> dict | None:
-    """
-    Scan rows in reverse to find the most recent quarterly row and extract
-    values for the columns named in col_map.
-    Returns {metric_key: {"value": str, "period": str}, ...}
-    """
-    for row in reversed(rows):
-        if not row:
-            continue
-        period_cell = row[0].strip()
-        if not re.search(r"Q[1-4]", period_cell, re.I):
-            continue
-        out = {}
-        for key, col_idx in col_map.items():
-            if col_idx < len(row):
-                raw = row[col_idx].replace(",", "").strip()
-                try:
-                    out[key] = {"value": str(int(float(raw))), "period": period_cell}
-                except (ValueError, TypeError):
-                    pass
-        if out:
-            return out
-    return None
  
  
 def _read_csv_from_zip(z: zipfile.ZipFile, name: str) -> list[list[str]]:
@@ -663,6 +686,13 @@ def update_macro():
     ds = data["datasets"]
     changed = False
  
+    # Auto-remove any datasets marked as ceased (keeps GitHub JSON clean)
+    original_len = len(ds)
+    ds[:] = [d for d in ds if d.get("status") != "ceased"]
+    if len(ds) < original_len:
+        log(f"  Removed {original_len - len(ds)} ceased dataset(s)")
+        changed = True
+ 
     ons_cdid_map = {
         "cpi_annual_rate":      "D7G7",
         "cpi_index":            "D7BT",
@@ -685,24 +715,15 @@ def update_macro():
             log(f"    No change (fetched: {result})")
         time.sleep(0.3)
  
-    # PIPR annual rate — UK (CZOH)
-    log("  PIPR annual rate (CZOH)")
-    pipr_rate = fetch_ons_timeseries("CZOH")
-    if update_dataset(ds, "pipr_annual_rate_uk", pipr_rate):
-        log(f"    Updated: {pipr_rate}")
+    # PIPR — Price Index of Private Rents (UK annual rate)
+    # Fetched by downloading the PIPR data file from the ONS publication page.
+    log("  PIPR annual rate (UK)")
+    pipr = fetch_ons_pipr_uk()
+    if update_dataset(ds, "pipr_annual_rate_uk", pipr):
+        log(f"    Updated: {pipr}")
         changed = True
     else:
-        log(f"    No change (fetched: {pipr_rate})")
-    time.sleep(0.3)
- 
-    # PIPR index — UK (CZOF)
-    log("  PIPR index (CZOF)")
-    pipr_idx = fetch_ons_timeseries("CZOF")
-    if update_dataset(ds, "pipr_index_uk", pipr_idx):
-        log(f"    Updated: {pipr_idx}")
-        changed = True
-    else:
-        log(f"    No change (fetched: {pipr_idx})")
+        log(f"    No change (fetched: {pipr})")
     time.sleep(0.3)
  
     # Bank of England base rate
