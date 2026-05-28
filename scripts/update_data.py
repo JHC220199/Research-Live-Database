@@ -460,7 +460,13 @@ def fetch_moj_possession() -> dict | None:
  
  
 def _parse_moj_csv_zip(zip_content: bytes) -> dict | None:
-    """Parse the MoJ CSV zip and extract possession statistics."""
+    """
+    Parse the MoJ CSV zip and extract possession statistics.
+ 
+    The zip structure has changed over time.  We now use header-aware column
+    detection rather than relying on fixed table-number filenames.  Each CSV
+    file is inspected for keywords that identify the columns we need.
+    """
     result = {}
  
     try:
@@ -470,48 +476,86 @@ def _parse_moj_csv_zip(zip_content: bytes) -> dict | None:
  
         for name in names:
             name_lower = name.lower()
+            if not name_lower.endswith(".csv"):
+                continue
  
-            # Table 4: Claims issued and bailiff repossessions
-            if "table_4" in name_lower or "table4" in name_lower or "_4_" in name_lower:
-                rows = _read_csv_from_zip(z, name)
-                r4 = _moj_latest_quarterly_row(rows)
-                if r4:
-                    period = r4.get("period", "")
-                    numerics = r4.get("values", [])
-                    if len(numerics) >= 1:
-                        result["claims_issued"] = {"value": numerics[0], "period": period}
-                    if len(numerics) >= 4:
-                        result["repossessions_bailiffs"] = {"value": numerics[-1], "period": period}
+            rows = _read_csv_from_zip(z, name)
+            if not rows:
+                continue
  
-            # Table 6a: Mean/median time
-            elif "table_6" in name_lower or "table6" in name_lower or "_6a" in name_lower:
-                rows = _read_csv_from_zip(z, name)
-                r6 = _moj_latest_quarterly_row(rows)
-                if r6:
-                    period = r6.get("period", "")
-                    numerics = r6.get("values", [])
-                    if len(numerics) >= 1:
-                        result["mean_time_all"] = {"value": numerics[0], "period": period}
-                    if len(numerics) >= 2:
-                        result["median_time_all"] = {"value": numerics[1], "period": period}
+            # Find the header row (first row with more than one non-empty cell)
+            header_row_idx = None
+            header = []
+            for i, row in enumerate(rows):
+                non_empty = [c.strip() for c in row if c.strip()]
+                if len(non_empty) >= 2:
+                    header_row_idx = i
+                    header = [c.strip().lower() for c in row]
+                    break
  
-            # Table 7: Accelerated/private/social claims
-            elif "table_7" in name_lower or "table7" in name_lower or "_7_" in name_lower:
-                rows = _read_csv_from_zip(z, name)
-                r7 = _moj_latest_quarterly_row(rows)
-                if r7:
-                    period = r7.get("period", "")
-                    numerics = r7.get("values", [])
-                    if len(numerics) >= 1:
-                        result["claims_prs"] = {"value": numerics[0], "period": period}
-                    if len(numerics) >= 2:
-                        result["claims_accelerated"] = {"value": numerics[1], "period": period}
+            if header_row_idx is None:
+                continue
+ 
+            # Build a map of keyword → column index from the header
+            col = {}
+            for j, h in enumerate(header):
+                if "claims issued" in h or (
+                        "claim" in h and "issue" in h and "landlord" not in h and "mortgage" not in h):
+                    col.setdefault("claims_issued", j)
+                if "landlord" in h and ("claim" in h or "issue" in h):
+                    col.setdefault("claims_prs", j)
+                if "accelerated" in h:
+                    col.setdefault("claims_accelerated", j)
+                if "bailiff" in h and "repossess" in h:
+                    col.setdefault("repossessions_bailiffs", j)
+                if "mean" in h and "week" in h:
+                    col.setdefault("mean_time_all", j)
+                if "median" in h and "week" in h:
+                    col.setdefault("median_time_all", j)
+ 
+            if not col:
+                log(f"  MoJ: no recognised columns in {name} — headers: {header[:8]}")
+                continue
+ 
+            # Find the most recent quarterly data row
+            data_rows = rows[header_row_idx + 1:]
+            latest = _moj_latest_quarterly_row_by_cols(data_rows, col)
+            if latest:
+                for key, val_period in latest.items():
+                    if key not in result:
+                        result[key] = val_period
+                        log(f"  MoJ ({name}): {key} = {val_period}")
  
     except Exception as e:
         error(f"MoJ CSV parse: {e}")
         return None
  
     return result if result else None
+ 
+ 
+def _moj_latest_quarterly_row_by_cols(rows: list, col_map: dict) -> dict | None:
+    """
+    Scan rows in reverse to find the most recent quarterly row and extract
+    values for the columns named in col_map.
+    Returns {metric_key: {"value": str, "period": str}, ...}
+    """
+    for row in reversed(rows):
+        if not row:
+            continue
+        period_cell = row[0].strip()
+        if not re.search(r"Q[1-4]", period_cell, re.I):
+            continue
+        out = {}
+        for key, col_idx in col_map.items():
+            if col_idx < len(row):
+                raw = row[col_idx].replace(",", "").strip()
+                try:
+                    out[key] = {"value": str(int(float(raw))), "period": period_cell}
+                except (ValueError, TypeError):
+                    pass
+        if out:
+            return out
+    return None
  
  
 def _read_csv_from_zip(z: zipfile.ZipFile, name: str) -> list[list[str]]:
@@ -522,27 +566,6 @@ def _read_csv_from_zip(z: zipfile.ZipFile, name: str) -> list[list[str]]:
         return list(reader)
  
  
-def _moj_latest_quarterly_row(rows: list) -> dict | None:
-    """
-    Find the most recent quarterly row in a MoJ CSV table.
-    Returns {"period": "...", "values": [numeric strings]} or None.
-    """
-    for row in reversed(rows):
-        if not row:
-            continue
-        period_cell = row[0].strip()
-        # Quarter format: "2026 Q1", "2025 Q4", "Q1 2026", etc.
-        if re.search(r"Q[1-4]", period_cell, re.I):
-            numerics = []
-            for cell in row[1:]:
-                try:
-                    val = str(int(float(cell.replace(",", "").strip())))
-                    numerics.append(val)
-                except (ValueError, AttributeError):
-                    pass
-            if numerics:
-                return {"period": period_cell, "values": numerics}
-    return None
  
  
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -887,3 +910,4 @@ def main():
  
 if __name__ == "__main__":
     main()
+ 
