@@ -14,7 +14,11 @@
       "nation": "UK",
       "unit": "%",
       "status": "active",
-      "latest": { "value": null, "period": null, "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": null,
+        "fetched_at": null
+      },
       "notes": ""
     },
     {
@@ -28,7 +32,11 @@
       "nation": "UK",
       "unit": "index",
       "status": "active",
-      "latest": { "value": null, "period": null, "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": null,
+        "fetched_at": null
+      },
       "notes": ""
     },
     {
@@ -42,7 +50,11 @@
       "nation": "UK",
       "unit": "%",
       "status": "active",
-      "latest": { "value": null, "period": null, "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": null,
+        "fetched_at": null
+      },
       "notes": ""
     },
     {
@@ -56,7 +68,11 @@
       "nation": "UK",
       "unit": "index",
       "status": "active",
-      "latest": { "value": null, "period": null, "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": null,
+        "fetched_at": null
+      },
       "notes": ""
     },
     {
@@ -70,7 +86,11 @@
       "nation": "UK",
       "unit": "%",
       "status": "active",
-      "latest": { "value": null, "period": null, "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": null,
+        "fetched_at": null
+      },
       "notes": "Replaces IPHRP. Also available by English region."
     },
     {
@@ -84,7 +104,11 @@
       "nation": "UK",
       "unit": "index",
       "status": "active",
-      "latest": { "value": null, "period": null, "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": null,
+        "fetched_at": null
+      },
       "notes": ""
     },
     {
@@ -98,7 +122,11 @@
       "nation": "UK",
       "unit": "%",
       "status": "active",
-      "latest": { "value": null, "period": null, "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": null,
+        "fetched_at": null
+      },
       "notes": "Uses 'first estimate' data — may be revised in subsequent releases."
     },
     {
@@ -112,7 +140,11 @@
       "nation": "UK",
       "unit": "%",
       "status": "active",
-      "latest": { "value": null, "period": null, "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": null,
+        "fetched_at": null
+      },
       "notes": ""
     },
     {
@@ -126,7 +158,11 @@
       "nation": "UK",
       "unit": "%",
       "status": "active",
-      "latest": { "value": null, "period": null, "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": null,
+        "fetched_at": null
+      },
       "notes": "Data recorded not published — records interest rates at month end."
     },
     {
@@ -140,7 +176,11 @@
       "nation": "UK",
       "unit": "£bn",
       "status": "active",
-      "latest": { "value": null, "period": null, "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": null,
+        "fetched_at": null
+      },
       "notes": ""
     },
     {
@@ -154,7 +194,11 @@
       "nation": "UK",
       "unit": "%",
       "status": "active",
-      "latest": { "value": null, "period": null, "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": null,
+        "fetched_at": null
+      },
       "notes": ""
     },
     {
@@ -168,7 +212,11 @@
       "nation": "GB",
       "unit": "£/week",
       "status": "active",
-      "latest": { "value": null, "period": null, "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": null,
+        "fetched_at": null
+      },
       "notes": ""
     },
     {
@@ -182,7 +230,11 @@
       "nation": "GB",
       "unit": "index",
       "status": "active",
-      "latest": { "value": null, "period": null, "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": null,
+        "fetched_at": null
+      },
       "notes": "This data series changes significantly — always verify historic values."
     },
     {
@@ -196,8 +248,12 @@
       "nation": "GB",
       "unit": "%",
       "status": "active",
-      "latest": { "value": null, "period": null, "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": null,
+        "fetched_at": null
+      },
       "notes": ""
-    },
+    }
   ]
 }
