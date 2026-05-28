@@ -59,6 +59,9 @@ ONS_PATHS = {
     "K54U": "employmentandlabourmarket/peopleinwork/earningsandworkinghours/timeseries/k54u",
     "A2FD": "employmentandlabourmarket/peopleinwork/earningsandworkinghours/timeseries/a2fd",
     "A3WV": "employmentandlabourmarket/peopleinwork/earningsandworkinghours/timeseries/a3wv",
+    # PIPR — Price Index of Private Rents (replaced IPHRP from Jan 2025)
+    "CZOH": "economy/inflationandpriceindices/timeseries/czoh",   # UK 12-month % change
+    "CZOF": "economy/inflationandpriceindices/timeseries/czof",   # UK index (Jan 2015=100)
 }
  
  
@@ -291,7 +294,8 @@ def fetch_mhclg_table213() -> dict | None:
                         col_map["ha"] = j
                     elif "local auth" in s:
                         col_map["la"] = j
-                    elif s.strip() == "total":
+                    elif ("total" in s or "all tenure" in s or s.strip() == "all") \
+                            and not any(x in s for x in ["private", "housing", "local", "social", "rsl"]):
                         col_map["total"] = j
                 if col_map:
                     break
@@ -658,14 +662,25 @@ def update_macro():
             log(f"    No change (fetched: {result})")
         time.sleep(0.3)
  
-    # PIPR (rental price index)
-    log("  PIPR annual rate")
-    pipr = fetch_ons_pipr_uk()
-    if update_dataset(ds, "pipr_annual_rate_uk", pipr):
-        log(f"    Updated: {pipr}")
+    # PIPR annual rate — UK (CZOH)
+    log("  PIPR annual rate (CZOH)")
+    pipr_rate = fetch_ons_timeseries("CZOH")
+    if update_dataset(ds, "pipr_annual_rate_uk", pipr_rate):
+        log(f"    Updated: {pipr_rate}")
         changed = True
-    if update_dataset(ds, "pipr_index_uk", pipr):
+    else:
+        log(f"    No change (fetched: {pipr_rate})")
+    time.sleep(0.3)
+ 
+    # PIPR index — UK (CZOF)
+    log("  PIPR index (CZOF)")
+    pipr_idx = fetch_ons_timeseries("CZOF")
+    if update_dataset(ds, "pipr_index_uk", pipr_idx):
+        log(f"    Updated: {pipr_idx}")
         changed = True
+    else:
+        log(f"    No change (fetched: {pipr_idx})")
+    time.sleep(0.3)
  
     # Bank of England base rate
     log("  BoE base rate (IUMABEDR)")
@@ -872,4 +887,3 @@ def main():
  
 if __name__ == "__main__":
     main()
- 
