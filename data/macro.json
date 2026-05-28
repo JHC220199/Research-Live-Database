@@ -1,7 +1,7 @@
 {
   "category": "Macro-Economic Data",
   "description": "Key macroeconomic indicators from the ONS and Bank of England, updated monthly or quarterly.",
-  "last_fetched": "2026-05-27T23:50:45Z",
+  "last_fetched": null,
   "datasets": [
     {
       "id": "cpi_annual_rate",
@@ -14,11 +14,7 @@
       "nation": "UK",
       "unit": "%",
       "status": "active",
-      "latest": {
-        "value": "2.8",
-        "period": "Apr 2026",
-        "fetched_at": "2026-05-27T23:50:39Z"
-      },
+      "latest": { "value": null, "period": null, "fetched_at": null },
       "notes": ""
     },
     {
@@ -32,11 +28,7 @@
       "nation": "UK",
       "unit": "index",
       "status": "active",
-      "latest": {
-        "value": "142.1",
-        "period": "Apr 2026",
-        "fetched_at": "2026-05-27T23:50:40Z"
-      },
+      "latest": { "value": null, "period": null, "fetched_at": null },
       "notes": ""
     },
     {
@@ -50,11 +42,7 @@
       "nation": "UK",
       "unit": "%",
       "status": "active",
-      "latest": {
-        "value": "3.0",
-        "period": "Apr 2026",
-        "fetched_at": "2026-05-27T23:50:40Z"
-      },
+      "latest": { "value": null, "period": null, "fetched_at": null },
       "notes": ""
     },
     {
@@ -68,11 +56,7 @@
       "nation": "UK",
       "unit": "index",
       "status": "active",
-      "latest": {
-        "value": "141.8",
-        "period": "Apr 2026",
-        "fetched_at": "2026-05-27T23:50:41Z"
-      },
+      "latest": { "value": null, "period": null, "fetched_at": null },
       "notes": ""
     },
     {
@@ -86,11 +70,7 @@
       "nation": "UK",
       "unit": "%",
       "status": "active",
-      "latest": {
-        "value": null,
-        "period": null,
-        "fetched_at": null
-      },
+      "latest": { "value": null, "period": null, "fetched_at": null },
       "notes": "Replaces IPHRP. Also available by English region."
     },
     {
@@ -104,11 +84,7 @@
       "nation": "UK",
       "unit": "index",
       "status": "active",
-      "latest": {
-        "value": null,
-        "period": null,
-        "fetched_at": null
-      },
+      "latest": { "value": null, "period": null, "fetched_at": null },
       "notes": ""
     },
     {
@@ -122,11 +98,7 @@
       "nation": "UK",
       "unit": "%",
       "status": "active",
-      "latest": {
-        "value": "0.6",
-        "period": "Q1 2026",
-        "fetched_at": "2026-05-27T23:50:41Z"
-      },
+      "latest": { "value": null, "period": null, "fetched_at": null },
       "notes": "Uses 'first estimate' data — may be revised in subsequent releases."
     },
     {
@@ -140,11 +112,7 @@
       "nation": "UK",
       "unit": "%",
       "status": "active",
-      "latest": {
-        "value": "1.1",
-        "period": "Q1 2026",
-        "fetched_at": "2026-05-27T23:50:42Z"
-      },
+      "latest": { "value": null, "period": null, "fetched_at": null },
       "notes": ""
     },
     {
@@ -158,11 +126,7 @@
       "nation": "UK",
       "unit": "%",
       "status": "active",
-      "latest": {
-        "value": "3.75",
-        "period": "Apr 2026",
-        "fetched_at": "2026-05-27T23:36:59Z"
-      },
+      "latest": { "value": null, "period": null, "fetched_at": null },
       "notes": "Data recorded not published — records interest rates at month end."
     },
     {
@@ -176,11 +140,7 @@
       "nation": "UK",
       "unit": "£bn",
       "status": "active",
-      "latest": {
-        "value": null,
-        "period": null,
-        "fetched_at": null
-      },
+      "latest": { "value": null, "period": null, "fetched_at": null },
       "notes": ""
     },
     {
@@ -194,11 +154,7 @@
       "nation": "UK",
       "unit": "%",
       "status": "active",
-      "latest": {
-        "value": null,
-        "period": null,
-        "fetched_at": null
-      },
+      "latest": { "value": null, "period": null, "fetched_at": null },
       "notes": ""
     },
     {
@@ -212,11 +168,7 @@
       "nation": "GB",
       "unit": "£/week",
       "status": "active",
-      "latest": {
-        "value": "239.7",
-        "period": "Mar 2026",
-        "fetched_at": "2026-05-27T23:50:42Z"
-      },
+      "latest": { "value": null, "period": null, "fetched_at": null },
       "notes": ""
     },
     {
@@ -230,11 +182,7 @@
       "nation": "GB",
       "unit": "index",
       "status": "active",
-      "latest": {
-        "value": "110.4",
-        "period": "Mar 2026",
-        "fetched_at": "2026-05-27T23:50:43Z"
-      },
+      "latest": { "value": null, "period": null, "fetched_at": null },
       "notes": "This data series changes significantly — always verify historic values."
     },
     {
@@ -248,48 +196,8 @@
       "nation": "GB",
       "unit": "%",
       "status": "active",
-      "latest": {
-        "value": "0.3",
-        "period": "Mar 2026",
-        "fetched_at": "2026-05-27T23:50:43Z"
-      },
+      "latest": { "value": null, "period": null, "fetched_at": null },
       "notes": ""
     },
-    {
-      "id": "gva_growth_region",
-      "name": "GVA Growth (%) by Region",
-      "description": "Gross Value Added growth by English region — no longer collected",
-      "source": "ONS",
-      "ref": "Table 4",
-      "source_url": "https://www.ons.gov.uk/economy/grossvalueaddedgva/datasets/regionalgrossvalueaddedbalancedbyindustry",
-      "frequency": "Annual",
-      "nation": "UK, England, Scotland, Wales, NI",
-      "unit": "%",
-      "status": "ceased",
-      "latest": {
-        "value": null,
-        "period": "2017",
-        "fetched_at": null
-      },
-      "notes": "Data collection ceased. Last available year: 2017."
-    },
-    {
-      "id": "gva_per_head",
-      "name": "GVA per Head (Current Prices) by Region",
-      "description": "Gross Value Added per head by English region — no longer collected",
-      "source": "ONS",
-      "ref": "Table 2",
-      "source_url": "https://www.ons.gov.uk/economy/grossvalueaddedgva/datasets/regionalgrossvalueaddedbalancedbyindustry",
-      "frequency": "Annual",
-      "nation": "UK, England, Scotland, Wales, NI",
-      "unit": "£",
-      "status": "ceased",
-      "latest": {
-        "value": null,
-        "period": "2017",
-        "fetched_at": null
-      },
-      "notes": "Data collection ceased. Last available year: 2017."
-    }
   ]
 }
