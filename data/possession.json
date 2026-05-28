@@ -1,7 +1,7 @@
 {
   "category": "Claims & Bailiffs",
   "description": "Landlord possession court action statistics from HM Courts & Tribunals Service (MoJ), updated quarterly.",
-  "last_fetched": null,
+  "last_fetched": "2026-05-28T08:36:19Z",
   "datasets": [
     {
       "id": "mlp_claims_issued",
@@ -15,7 +15,11 @@
       "region": "None",
       "unit": "claims",
       "status": "active",
-      "latest": { "value": null, "period": "2025 Q4", "fetched_at": null },
+      "latest": {
+        "value": "22733",
+        "period": "2026 Q1",
+        "fetched_at": "2026-05-28T08:36:19Z"
+      },
       "notes": "Data from 2009 Q1."
     },
     {
@@ -30,7 +34,11 @@
       "region": "None",
       "unit": "repossessions",
       "status": "active",
-      "latest": { "value": null, "period": "2025 Q4", "fetched_at": null },
+      "latest": {
+        "value": "6888",
+        "period": "2026 Q1",
+        "fetched_at": "2026-05-28T08:36:19Z"
+      },
       "notes": ""
     },
     {
@@ -45,7 +53,11 @@
       "region": "None",
       "unit": "claims",
       "status": "active",
-      "latest": { "value": null, "period": "2025 Q4", "fetched_at": null },
+      "latest": {
+        "value": "14228",
+        "period": "2026 Q1",
+        "fetched_at": "2026-05-28T08:36:19Z"
+      },
       "notes": "Breakdown includes accelerated procedure, private landlords, and social landlords."
     },
     {
@@ -60,7 +72,11 @@
       "region": "None",
       "unit": "claims",
       "status": "active",
-      "latest": { "value": null, "period": "2025 Q4", "fetched_at": null },
+      "latest": {
+        "value": "6599",
+        "period": "2026 Q1",
+        "fetched_at": "2026-05-28T08:36:19Z"
+      },
       "notes": ""
     },
     {
@@ -75,7 +91,11 @@
       "region": "None",
       "unit": "weeks",
       "status": "active",
-      "latest": { "value": null, "period": "2025 Q4", "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": "2025 Q4",
+        "fetched_at": null
+      },
       "notes": ""
     },
     {
@@ -90,7 +110,11 @@
       "region": "None",
       "unit": "weeks",
       "status": "active",
-      "latest": { "value": null, "period": "2025 Q4", "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": "2025 Q4",
+        "fetched_at": null
+      },
       "notes": "This is a supplementary (hidden) breakdown within Table 6a."
     },
     {
@@ -105,7 +129,11 @@
       "region": "None",
       "unit": "weeks",
       "status": "active",
-      "latest": { "value": null, "period": "2025 Q4", "fetched_at": null },
+      "latest": {
+        "value": null,
+        "period": "2025 Q4",
+        "fetched_at": null
+      },
       "notes": ""
     }
   ]
