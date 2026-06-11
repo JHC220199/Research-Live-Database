@@ -1,7 +1,7 @@
 {
   "category": "Housing Trends",
   "description": "Household tenure data from the Family Resources Survey (FRS), updated annually each March.",
-  "last_fetched": "2026-06-11T11:16:24Z",
+  "last_fetched": "2026-06-11T21:56:22Z",
   "datasets": [
     {
       "id": "frs_tenure_pct",
@@ -16,9 +16,9 @@
       "unit": "%",
       "status": "active",
       "latest": {
-        "value": null,
+        "value": "19",
         "period": "2024/25",
-        "fetched_at": "2026-06-11T11:16:24Z"
+        "fetched_at": "2026-06-11T21:56:22Z"
       },
       "notes": "Published each March. Regional data available from 2014/15."
     },
@@ -35,9 +35,9 @@
       "unit": "%",
       "status": "active",
       "latest": {
-        "value": null,
+        "value": "19",
         "period": "2024/25",
-        "fetched_at": "2026-06-11T11:16:24Z"
+        "fetched_at": "2026-06-11T21:56:22Z"
       },
       "notes": ""
     },
@@ -54,9 +54,9 @@
       "unit": "%",
       "status": "active",
       "latest": {
-        "value": null,
+        "value": "42",
         "period": "2024/25",
-        "fetched_at": "2026-06-11T11:16:24Z"
+        "fetched_at": "2026-06-11T21:56:22Z"
       },
       "notes": "Selected years only — not all years available in full series."
     },
@@ -73,9 +73,9 @@
       "unit": "£/week",
       "status": "active",
       "latest": {
-        "value": null,
+        "value": "190",
         "period": "2024/25",
-        "fetched_at": "2026-06-11T11:16:24Z"
+        "fetched_at": "2026-06-11T21:56:22Z"
       },
       "notes": "Owner occupier mortgage data available from 2012/13 onwards."
     }
