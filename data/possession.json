@@ -1,7 +1,7 @@
 {
   "category": "Claims & Bailiffs",
   "description": "Landlord possession court action statistics from HM Courts & Tribunals Service (MoJ), updated quarterly.",
-  "last_fetched": "2026-05-28T08:36:19Z",
+  "last_fetched": "2026-06-11T21:56:32Z",
   "datasets": [
     {
       "id": "mlp_claims_issued",
@@ -92,11 +92,11 @@
       "unit": "weeks",
       "status": "active",
       "latest": {
-        "value": null,
-        "period": "2025 Q4",
-        "fetched_at": null
+        "value": "12.5",
+        "period": "2026 Q1",
+        "fetched_at": "2026-06-11T21:56:32Z"
       },
-      "notes": ""
+      "notes": "Mean weeks from landlord possession claim to order, all landlord types. Source: MoJ Tables ODS, Table 6."
     },
     {
       "id": "mlp_mean_time_prs",
@@ -111,11 +111,11 @@
       "unit": "weeks",
       "status": "active",
       "latest": {
-        "value": null,
-        "period": "2025 Q4",
-        "fetched_at": null
+        "value": "12.8",
+        "period": "2026 Q1",
+        "fetched_at": "2026-06-11T21:56:32Z"
       },
-      "notes": "This is a supplementary (hidden) breakdown within Table 6a."
+      "notes": "Private landlord claims only. Source: MoJ Tables ODS, Data_6 breakdown."
     },
     {
       "id": "mlp_median_time_all",
@@ -130,11 +130,11 @@
       "unit": "weeks",
       "status": "active",
       "latest": {
-        "value": null,
-        "period": "2025 Q4",
-        "fetched_at": null
+        "value": "8",
+        "period": "2026 Q1",
+        "fetched_at": "2026-06-11T21:56:32Z"
       },
-      "notes": ""
+      "notes": "Median weeks from landlord possession claim to order. Source: MoJ Tables ODS, Table 6."
     }
   ]
 }
