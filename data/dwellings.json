@@ -1,7 +1,7 @@
 {
   "category": "Dwellings",
   "description": "New dwelling completions and starts by tenure, from MHCLG (England) and Stats Wales (Wales).",
-  "last_fetched": "2026-05-28T08:36:17Z",
+  "last_fetched": "2026-06-11T22:07:14Z",
   "datasets": [
     {
       "id": "mhclg_completions_private",
@@ -92,9 +92,9 @@
       "unit": "dwellings",
       "status": "active",
       "latest": {
-        "value": null,
-        "period": "2025-26 Q2 (Jul-Sep)",
-        "fetched_at": null
+        "value": "1811",
+        "period": "Q3 2025-26",
+        "fetched_at": "2026-06-11T22:07:14Z"
       },
       "notes": "Annual data from 2000; quarterly from 2010."
     },
@@ -111,9 +111,9 @@
       "unit": "dwellings",
       "status": "active",
       "latest": {
-        "value": null,
-        "period": "2025-26 Q2 (Jul-Sep)",
-        "fetched_at": null
+        "value": "1532",
+        "period": "Q3 2025-26",
+        "fetched_at": "2026-06-11T22:07:14Z"
       },
       "notes": ""
     }
