@@ -1,7 +1,7 @@
 {
   "category": "Macro-Economic Data",
   "description": "Key macroeconomic indicators from the ONS and Bank of England, updated monthly or quarterly.",
-  "last_fetched": "2026-06-02T11:10:27Z",
+  "last_fetched": "2026-06-11T21:56:20Z",
   "datasets": [
     {
       "id": "cpi_annual_rate",
@@ -87,11 +87,11 @@
       "unit": "%",
       "status": "active",
       "latest": {
-        "value": "140",
-        "period": "Jan 2025",
-        "fetched_at": "2026-05-28T00:09:49Z"
+        "value": "3.5",
+        "period": "Apr 2026",
+        "fetched_at": "2026-06-11T21:56:18Z"
       },
-      "notes": "Replaces IPHRP. Also available by English region."
+      "notes": "Replaces IPHRP. Sourced from the ONS PIPR monthly statistics dataset (xlsx); plausibility-checked 0.5-25%."
     },
     {
       "id": "pipr_index_uk",
@@ -105,9 +105,9 @@
       "unit": "index",
       "status": "active",
       "latest": {
-        "value": null,
-        "period": null,
-        "fetched_at": null
+        "value": "123.3",
+        "period": "Apr 2026",
+        "fetched_at": "2026-06-11T21:56:18Z"
       },
       "notes": ""
     },
@@ -177,11 +177,11 @@
       "unit": "£bn",
       "status": "active",
       "latest": {
-        "value": null,
-        "period": null,
-        "fetched_at": null
+        "value": "69.6",
+        "period": "2026 Q1",
+        "fetched_at": "2026-06-11T21:56:20Z"
       },
-      "notes": ""
+      "notes": "Residential loans to individuals, regulated + non-regulated. Sourced from FCA/BoE MLAR long-run detailed tables (Table 1.21) — the BoE IADB blocks this series."
     },
     {
       "id": "boe_btl_proportion",
@@ -195,11 +195,11 @@
       "unit": "%",
       "status": "active",
       "latest": {
-        "value": null,
-        "period": null,
-        "fetched_at": null
+        "value": "8.9",
+        "period": "2026 Q1",
+        "fetched_at": "2026-06-11T21:56:20Z"
       },
-      "notes": ""
+      "notes": "Buy-to-let share of all residential gross advances. Source: MLAR Table 1.33 section C."
     },
     {
       "id": "awe_total_pay",
