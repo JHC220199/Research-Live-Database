@@ -1,7 +1,7 @@
 {
   "category": "Macro-Economic Data",
   "description": "Key macroeconomic indicators from the ONS and Bank of England, updated monthly or quarterly.",
-  "last_fetched": "2026-06-11T21:56:20Z",
+  "last_fetched": "2026-06-12T08:50:30Z",
   "datasets": [
     {
       "id": "cpi_annual_rate",
@@ -17,7 +17,12 @@
       "latest": {
         "value": "2.8",
         "period": "Apr 2026",
-        "fetched_at": "2026-05-28T00:09:45Z"
+        "fetched_at": "2026-06-12T08:50:21Z",
+        "prev": {
+          "value": "3.3",
+          "period": "Mar 2026"
+        },
+        "trend": "down"
       },
       "notes": ""
     },
@@ -35,7 +40,12 @@
       "latest": {
         "value": "142.1",
         "period": "Apr 2026",
-        "fetched_at": "2026-05-28T00:09:45Z"
+        "fetched_at": "2026-06-12T08:50:22Z",
+        "prev": {
+          "value": "141.0",
+          "period": "Mar 2026"
+        },
+        "trend": "up"
       },
       "notes": ""
     },
@@ -53,7 +63,12 @@
       "latest": {
         "value": "3.0",
         "period": "Apr 2026",
-        "fetched_at": "2026-05-28T00:09:45Z"
+        "fetched_at": "2026-06-12T08:50:22Z",
+        "prev": {
+          "value": "3.4",
+          "period": "Mar 2026"
+        },
+        "trend": "down"
       },
       "notes": ""
     },
@@ -71,7 +86,12 @@
       "latest": {
         "value": "141.8",
         "period": "Apr 2026",
-        "fetched_at": "2026-05-28T00:09:46Z"
+        "fetched_at": "2026-06-12T08:50:23Z",
+        "prev": {
+          "value": "140.8",
+          "period": "Mar 2026"
+        },
+        "trend": "up"
       },
       "notes": ""
     },
@@ -89,7 +109,12 @@
       "latest": {
         "value": "3.5",
         "period": "Apr 2026",
-        "fetched_at": "2026-06-11T21:56:18Z"
+        "fetched_at": "2026-06-12T08:50:28Z",
+        "prev": {
+          "value": "3.4",
+          "period": "Mar 2026"
+        },
+        "trend": "up"
       },
       "notes": "Replaces IPHRP. Sourced from the ONS PIPR monthly statistics dataset (xlsx); plausibility-checked 0.5-25%."
     },
@@ -107,7 +132,12 @@
       "latest": {
         "value": "123.3",
         "period": "Apr 2026",
-        "fetched_at": "2026-06-11T21:56:18Z"
+        "fetched_at": "2026-06-12T08:50:28Z",
+        "prev": {
+          "value": "122.9",
+          "period": "Mar 2026"
+        },
+        "trend": "up"
       },
       "notes": ""
     },
@@ -125,7 +155,12 @@
       "latest": {
         "value": "0.6",
         "period": "Q1 2026",
-        "fetched_at": "2026-05-28T00:09:46Z"
+        "fetched_at": "2026-06-12T08:50:24Z",
+        "prev": {
+          "value": "0.2",
+          "period": "Q4 2025"
+        },
+        "trend": "up"
       },
       "notes": "Uses 'first estimate' data — may be revised in subsequent releases."
     },
@@ -143,7 +178,12 @@
       "latest": {
         "value": "1.1",
         "period": "Q1 2026",
-        "fetched_at": "2026-05-28T00:09:47Z"
+        "fetched_at": "2026-06-12T08:50:24Z",
+        "prev": {
+          "value": "1.0",
+          "period": "Q4 2025"
+        },
+        "trend": "up"
       },
       "notes": ""
     },
@@ -161,7 +201,12 @@
       "latest": {
         "value": "3.75",
         "period": "May 2026",
-        "fetched_at": "2026-06-02T11:10:26Z"
+        "fetched_at": "2026-06-12T08:50:30Z",
+        "prev": {
+          "value": "3.75",
+          "period": "Apr 2026"
+        },
+        "trend": "same"
       },
       "notes": "Data recorded not published — records interest rates at month end."
     },
@@ -179,7 +224,12 @@
       "latest": {
         "value": "69.6",
         "period": "2026 Q1",
-        "fetched_at": "2026-06-11T21:56:20Z"
+        "fetched_at": "2026-06-12T08:50:30Z",
+        "prev": {
+          "value": "79.4",
+          "period": "2025 Q4"
+        },
+        "trend": "down"
       },
       "notes": "Residential loans to individuals, regulated + non-regulated. Sourced from FCA/BoE MLAR long-run detailed tables (Table 1.21) — the BoE IADB blocks this series."
     },
@@ -197,7 +247,12 @@
       "latest": {
         "value": "8.9",
         "period": "2026 Q1",
-        "fetched_at": "2026-06-11T21:56:20Z"
+        "fetched_at": "2026-06-12T08:50:30Z",
+        "prev": {
+          "value": "8.4",
+          "period": "2025 Q4"
+        },
+        "trend": "up"
       },
       "notes": "Buy-to-let share of all residential gross advances. Source: MLAR Table 1.33 section C."
     },
@@ -215,7 +270,12 @@
       "latest": {
         "value": "239.7",
         "period": "Mar 2026",
-        "fetched_at": "2026-05-28T00:09:47Z"
+        "fetched_at": "2026-06-12T08:50:25Z",
+        "prev": {
+          "value": "238.6",
+          "period": "Feb 2026"
+        },
+        "trend": "up"
       },
       "notes": ""
     },
@@ -233,7 +293,12 @@
       "latest": {
         "value": "110.4",
         "period": "Mar 2026",
-        "fetched_at": "2026-05-28T00:09:48Z"
+        "fetched_at": "2026-06-12T08:50:25Z",
+        "prev": {
+          "value": "110.0",
+          "period": "Feb 2026"
+        },
+        "trend": "up"
       },
       "notes": "This data series changes significantly — always verify historic values."
     },
@@ -251,7 +316,12 @@
       "latest": {
         "value": "0.3",
         "period": "Mar 2026",
-        "fetched_at": "2026-05-28T00:09:48Z"
+        "fetched_at": "2026-06-12T08:50:26Z",
+        "prev": {
+          "value": "0.6",
+          "period": "Feb 2026"
+        },
+        "trend": "down"
       },
       "notes": ""
     }

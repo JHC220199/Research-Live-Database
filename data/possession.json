@@ -1,7 +1,7 @@
 {
   "category": "Claims & Bailiffs",
   "description": "Landlord possession court action statistics from HM Courts & Tribunals Service (MoJ), updated quarterly.",
-  "last_fetched": "2026-06-11T21:56:32Z",
+  "last_fetched": "2026-06-12T08:50:44Z",
   "datasets": [
     {
       "id": "mlp_claims_issued",
@@ -18,7 +18,12 @@
       "latest": {
         "value": "22733",
         "period": "2026 Q1",
-        "fetched_at": "2026-05-28T08:36:19Z"
+        "fetched_at": "2026-06-12T08:50:44Z",
+        "prev": {
+          "value": "21457",
+          "period": "2025 Q4"
+        },
+        "trend": "up"
       },
       "notes": "Data from 2009 Q1."
     },
@@ -37,7 +42,12 @@
       "latest": {
         "value": "6888",
         "period": "2026 Q1",
-        "fetched_at": "2026-05-28T08:36:19Z"
+        "fetched_at": "2026-06-12T08:50:44Z",
+        "prev": {
+          "value": "7275",
+          "period": "2025 Q4"
+        },
+        "trend": "down"
       },
       "notes": ""
     },
@@ -56,7 +66,12 @@
       "latest": {
         "value": "14228",
         "period": "2026 Q1",
-        "fetched_at": "2026-05-28T08:36:19Z"
+        "fetched_at": "2026-06-12T08:50:44Z",
+        "prev": {
+          "value": "13354",
+          "period": "2025 Q4"
+        },
+        "trend": "up"
       },
       "notes": "Breakdown includes accelerated procedure, private landlords, and social landlords."
     },
@@ -75,7 +90,12 @@
       "latest": {
         "value": "6599",
         "period": "2026 Q1",
-        "fetched_at": "2026-05-28T08:36:19Z"
+        "fetched_at": "2026-06-12T08:50:44Z",
+        "prev": {
+          "value": "6489",
+          "period": "2025 Q4"
+        },
+        "trend": "up"
       },
       "notes": ""
     },
@@ -94,7 +114,12 @@
       "latest": {
         "value": "12.5",
         "period": "2026 Q1",
-        "fetched_at": "2026-06-11T21:56:32Z"
+        "fetched_at": "2026-06-12T08:50:44Z",
+        "prev": {
+          "value": "11.8",
+          "period": "2025 Q4"
+        },
+        "trend": "up"
       },
       "notes": "Mean weeks from landlord possession claim to order, all landlord types. Source: MoJ Tables ODS, Table 6."
     },
@@ -113,7 +138,12 @@
       "latest": {
         "value": "12.8",
         "period": "2026 Q1",
-        "fetched_at": "2026-06-11T21:56:32Z"
+        "fetched_at": "2026-06-12T08:50:44Z",
+        "prev": {
+          "value": "11.5",
+          "period": "2025 Q4"
+        },
+        "trend": "up"
       },
       "notes": "Private landlord claims only. Source: MoJ Tables ODS, Data_6 breakdown."
     },
@@ -132,7 +162,12 @@
       "latest": {
         "value": "8",
         "period": "2026 Q1",
-        "fetched_at": "2026-06-11T21:56:32Z"
+        "fetched_at": "2026-06-12T08:50:44Z",
+        "prev": {
+          "value": "7.3",
+          "period": "2025 Q4"
+        },
+        "trend": "up"
       },
       "notes": "Median weeks from landlord possession claim to order. Source: MoJ Tables ODS, Table 6."
     }

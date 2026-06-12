@@ -1,7 +1,7 @@
 {
   "category": "English Housing Survey",
   "description": "Housing stock and household condition data from the English Housing Survey (EHS), updated annually. Note: some data collected by calendar year, other data by financial year.",
-  "last_fetched": "2026-06-11T21:56:38Z",
+  "last_fetched": "2026-06-12T08:50:53Z",
   "datasets": [
     {
       "id": "ehs_dwellings_vacant",
@@ -18,7 +18,12 @@
       "latest": {
         "value": "25617",
         "period": "2024",
-        "fetched_at": "2026-06-11T21:56:38Z"
+        "fetched_at": "2026-06-12T08:50:53Z",
+        "prev": {
+          "value": "25396",
+          "period": "2023"
+        },
+        "trend": "up"
       },
       "notes": "Total English housing stock across all tenures, occupied plus vacant. Source: EHS headline annex AT1.9 (vacant dwellings by tenure). PRS stock 2024: 4,910k, of which 519k vacant."
     },
@@ -37,7 +42,12 @@
       "latest": {
         "value": "4713",
         "period": "2024-25",
-        "fetched_at": "2026-06-11T21:56:38Z"
+        "fetched_at": "2026-06-12T08:50:53Z",
+        "prev": {
+          "value": "4657",
+          "period": "2023-24"
+        },
+        "trend": "up"
       },
       "notes": ""
     },
@@ -56,7 +66,12 @@
       "latest": {
         "value": "18.9",
         "period": "2024-25",
-        "fetched_at": "2026-06-11T21:56:38Z"
+        "fetched_at": "2026-06-12T08:50:53Z",
+        "prev": {
+          "value": "18.8",
+          "period": "2023-24"
+        },
+        "trend": "up"
       },
       "notes": ""
     },
@@ -75,7 +90,12 @@
       "latest": {
         "value": "28.1",
         "period": "2024-25",
-        "fetched_at": "2026-06-11T21:56:38Z"
+        "fetched_at": "2026-06-12T08:50:53Z",
+        "prev": {
+          "value": "31.8",
+          "period": "2023-24"
+        },
+        "trend": "down"
       },
       "notes": "Headline figure shows London, the region with the largest PRS share. Source: annex AT1.2 (tenure by region), PRS households as a share of all households."
     },
@@ -94,7 +114,12 @@
       "latest": {
         "value": "250",
         "period": "2024-25",
-        "fetched_at": "2026-06-11T21:56:38Z"
+        "fetched_at": "2026-06-12T08:50:53Z",
+        "prev": {
+          "value": "237",
+          "period": "2023-24"
+        },
+        "trend": "up"
       },
       "notes": "Households Report: Profile of Households chapter."
     },
@@ -113,7 +138,12 @@
       "latest": {
         "value": "208",
         "period": "2024-25",
-        "fetched_at": "2026-06-11T21:56:38Z"
+        "fetched_at": "2026-06-12T08:50:53Z",
+        "prev": {
+          "value": "196",
+          "period": "2023-24"
+        },
+        "trend": "up"
       },
       "notes": ""
     },
@@ -132,7 +162,12 @@
       "latest": {
         "value": "39.3",
         "period": "2024-25",
-        "fetched_at": "2026-06-11T21:56:38Z"
+        "fetched_at": "2026-06-12T08:50:53Z",
+        "prev": {
+          "value": "39.3",
+          "period": "2023-24"
+        },
+        "trend": "same"
       },
       "notes": "Household income basis, including housing support. The 2024-25 annexes (AT2.5) publish two bases; the HRP & partner income basis is 46.3%."
     },
@@ -189,7 +224,12 @@
       "latest": {
         "value": "22.3",
         "period": "2024",
-        "fetched_at": "2026-06-11T21:56:38Z"
+        "fetched_at": "2026-06-12T08:50:53Z",
+        "prev": {
+          "value": "21.1",
+          "period": "2023"
+        },
+        "trend": "up"
       },
       "notes": "Headline report: Housing Stock tables."
     },
@@ -208,7 +248,12 @@
       "latest": {
         "value": "10.3",
         "period": "2024",
-        "fetched_at": "2026-06-11T21:56:38Z"
+        "fetched_at": "2026-06-12T08:50:53Z",
+        "prev": {
+          "value": "10.2",
+          "period": "2023"
+        },
+        "trend": "up"
       },
       "notes": "Headline report: Housing Stock tables."
     },
@@ -246,7 +291,12 @@
       "latest": {
         "value": "50.9",
         "period": "2024",
-        "fetched_at": "2026-06-11T21:56:38Z"
+        "fetched_at": "2026-06-12T08:50:53Z",
+        "prev": {
+          "value": "25.3",
+          "period": "2014"
+        },
+        "trend": "up"
       },
       "notes": "Share of PRS dwellings rated EPC band A to C. Source: annex AT2.2."
     }

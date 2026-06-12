@@ -1,7 +1,7 @@
 {
   "category": "Dwellings",
   "description": "New dwelling completions and starts by tenure, from MHCLG (England) and Stats Wales (Wales).",
-  "last_fetched": "2026-06-11T22:07:14Z",
+  "last_fetched": "2026-06-12T08:50:37Z",
   "datasets": [
     {
       "id": "mhclg_completions_private",
@@ -18,7 +18,12 @@
       "latest": {
         "value": "29700",
         "period": "2025 Q4",
-        "fetched_at": "2026-05-27T23:37:02Z"
+        "fetched_at": "2026-06-12T08:50:35Z",
+        "prev": {
+          "value": "23120",
+          "period": "2025 Q3"
+        },
+        "trend": "up"
       },
       "notes": "Annual data from 1969; quarterly from 2000 Q1."
     },
@@ -37,7 +42,12 @@
       "latest": {
         "value": "11160",
         "period": "2025 Q4",
-        "fetched_at": "2026-05-27T23:37:02Z"
+        "fetched_at": "2026-06-12T08:50:35Z",
+        "prev": {
+          "value": "7360",
+          "period": "2025 Q3"
+        },
+        "trend": "up"
       },
       "notes": ""
     },
@@ -56,7 +66,12 @@
       "latest": {
         "value": "720",
         "period": "2025 Q4",
-        "fetched_at": "2026-05-27T23:37:02Z"
+        "fetched_at": "2026-06-12T08:50:35Z",
+        "prev": {
+          "value": "440",
+          "period": "2025 Q3"
+        },
+        "trend": "up"
       },
       "notes": ""
     },
@@ -75,7 +90,12 @@
       "latest": {
         "value": "41570",
         "period": "2025 Q4",
-        "fetched_at": "2026-05-28T08:36:15Z"
+        "fetched_at": "2026-06-12T08:50:35Z",
+        "prev": {
+          "value": "30920",
+          "period": "2025 Q3"
+        },
+        "trend": "up"
       },
       "notes": ""
     },
@@ -94,7 +114,12 @@
       "latest": {
         "value": "1811",
         "period": "Q3 2025-26",
-        "fetched_at": "2026-06-11T22:07:14Z"
+        "fetched_at": "2026-06-12T08:50:37Z",
+        "prev": {
+          "value": "1046",
+          "period": "Q2 2025-26"
+        },
+        "trend": "up"
       },
       "notes": "Annual data from 2000; quarterly from 2010."
     },
@@ -113,7 +138,12 @@
       "latest": {
         "value": "1532",
         "period": "Q3 2025-26",
-        "fetched_at": "2026-06-11T22:07:14Z"
+        "fetched_at": "2026-06-12T08:50:37Z",
+        "prev": {
+          "value": "792",
+          "period": "Q2 2025-26"
+        },
+        "trend": "up"
       },
       "notes": ""
     }
