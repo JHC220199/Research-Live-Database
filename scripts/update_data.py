@@ -3,7 +3,7 @@ NRLA Data Dashboard — Automated Data Updater
 =============================================
 Fetches the latest statistics from official UK sources and updates the JSON
 data files in /data/. Designed to run daily via GitHub Actions.
- 
+
 Sources:
   - ONS website JSON endpoint  (CPI, CPIH, GDP, earnings, PIPR)
   - Bank of England IADB       (base rate, mortgage advances)
@@ -12,7 +12,7 @@ Sources:
   - MoJ / HMCTS CSV zip        (landlord possession statistics)
   - EHS / FRS collection pages (annual survey release detection)
 """
- 
+
 import csv
 import io
 import json
@@ -23,32 +23,32 @@ import time
 import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
- 
+
 import requests
 import openpyxl
 import pandas as pd
 from bs4 import BeautifulSoup
- 
+
 # ── Paths ─────────────────────────────────────────────────────────────────────
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
- 
+
 # ── Shared HTTP session ───────────────────────────────────────────────────────
 SESSION = requests.Session()
 SESSION.headers.update({
     "User-Agent": "NRLA-Data-Dashboard/1.0 (github.com/nrla; data@nrla.org.uk)"
 })
- 
+
 # ── Logging helpers ───────────────────────────────────────────────────────────
 def log(msg):   print(f"[{datetime.now().strftime('%H:%M:%S')}] {msg}")
 def warn(msg):  print(f"[{datetime.now().strftime('%H:%M:%S')}] ⚠  {msg}", file=sys.stderr)
 def error(msg): print(f"[{datetime.now().strftime('%H:%M:%S')}] ✖  {msg}", file=sys.stderr)
- 
- 
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 #  ONS TIME SERIES
 # ═══════════════════════════════════════════════════════════════════════════════
- 
+
 # Full ONS website paths for each CDID code.
 # The data endpoint is: https://www.ons.gov.uk/{path}/data  → returns JSON
 ONS_PATHS = {
@@ -64,8 +64,8 @@ ONS_PATHS = {
     # PIPR — Price Index of Private Rents (standalone dataset, CDIDs not available via MM23)
     # NOTE: PIPR is fetched via fetch_ons_pipr_uk() which downloads the published data file.
 }
- 
- 
+
+
 def fetch_ons_timeseries(cdid: str) -> dict | None:
     """
     Fetch the latest value for an ONS time series using the website's JSON endpoint.
@@ -75,13 +75,13 @@ def fetch_ons_timeseries(cdid: str) -> dict | None:
     if not path:
         warn(f"ONS {cdid}: no path configured")
         return None
- 
+
     url = f"https://www.ons.gov.uk/{path}/data"
     try:
         r = SESSION.get(url, timeout=20)
         r.raise_for_status()
         data = r.json()
- 
+
         # Try months first (most recent for monthly series), then quarters, then years
         for period_type in ("months", "quarters", "years"):
             entries = data.get(period_type, [])
@@ -90,16 +90,23 @@ def fetch_ons_timeseries(cdid: str) -> dict | None:
                 raw_date = latest.get("date", latest.get("label", ""))
                 # Format monthly dates: "2026 JAN" → "Jan 2026"
                 formatted = _format_ons_date(raw_date)
-                return {"value": latest.get("value"), "period": formatted}
- 
+                result = {"value": latest.get("value"), "period": formatted}
+                if len(entries) > 1:
+                    prev = entries[-2]
+                    result["prev"] = {
+                        "value": prev.get("value"),
+                        "period": _format_ons_date(prev.get("date", prev.get("label", ""))),
+                    }
+                return result
+
         warn(f"ONS {cdid}: no period data in response")
         return None
- 
+
     except Exception as e:
         error(f"ONS {cdid}: {e}")
         return None
- 
- 
+
+
 def _format_ons_date(raw: str) -> str:
     """Convert ONS date strings like '2026 JAN' or '2025 Q3' to readable form."""
     raw = raw.strip()
@@ -116,8 +123,8 @@ def _format_ons_date(raw: str) -> str:
     if m:
         return f"{m.group(2)} {m.group(1)}"
     return raw
- 
- 
+
+
 
 PIPR_DATASET = ("https://www.ons.gov.uk/economy/inflationandpriceindices/datasets/"
                 "priceindexofprivaterentsukmonthlypricestatistics")
@@ -157,10 +164,10 @@ def fetch_ons_pipr_uk() -> dict | None:
         fr.raise_for_status()
         wb = openpyxl.load_workbook(io.BytesIO(fr.content), read_only=True, data_only=True)
         ws = wb["Table 1"]
-        last_uk = None
+        last_uk, prev_uk = None, None
         for row in ws.iter_rows(values_only=True):
             if row and len(row) > 6 and str(row[1]).strip() == "K02000001":
-                last_uk = row
+                prev_uk, last_uk = last_uk, row
             elif last_uk is not None and row and str(row[1]).strip() != "K02000001":
                 break  # UK block sits at the top of the sheet
         if not last_uk:
@@ -181,6 +188,21 @@ def fetch_ons_pipr_uk() -> dict | None:
             warn(f"PIPR: annual rate {annual_v} failed plausibility check")
         if index_v is not None and 50 <= index_v <= 250:
             out["index"] = {"value": _fmt(index_v, 1), "period": period}
+
+        # Previous month (trend badge)
+        if prev_uk is not None:
+            p_raw, p_index, p_annual = prev_uk[0], _num(prev_uk[4]), _num(prev_uk[6])
+            if isinstance(p_raw, datetime):
+                p_period = p_raw.strftime("%b %Y")
+            else:
+                try:
+                    p_period = datetime.fromisoformat(str(p_raw)[:10]).strftime("%b %Y")
+                except ValueError:
+                    p_period = str(p_raw)
+            if "annual_rate" in out and p_annual is not None and 0.5 <= abs(p_annual) <= 25:
+                out["annual_rate"]["prev"] = {"value": _fmt(p_annual, 1), "period": p_period}
+            if "index" in out and p_index is not None and 50 <= p_index <= 250:
+                out["index"]["prev"] = {"value": _fmt(p_index, 1), "period": p_period}
         return out or None
     except Exception as e:
         error(f"PIPR: {e}")
@@ -201,7 +223,7 @@ def fetch_boe_series(series_code: str, label: str) -> dict | None:
         r = SESSION.get(url, timeout=25)
         r.raise_for_status()
         lines = [l.strip() for l in r.text.splitlines() if l.strip()]
- 
+
         data_lines = []
         for line in lines:
             parts = [p.strip() for p in line.split(",")]
@@ -209,39 +231,52 @@ def fetch_boe_series(series_code: str, label: str) -> dict | None:
                 # Match both "01 Jan 2024" (monthly) and "01 Jan 2024" style dates
                 if re.match(r"\d{2}\s+\w+\s+\d{4}", parts[0]):
                     data_lines.append(parts)
- 
+
         if not data_lines:
             warn(f"BoE {series_code}: no data rows found")
             return None
- 
-        latest = data_lines[-1]
+
+        idx = len(data_lines) - 1
+        latest = data_lines[idx]
         date_str = latest[0]
         value = latest[1] if len(latest) > 1 else None
- 
+
         if not value or value in ("", ".", ".."):
             # Sometimes last row is incomplete — try second-to-last
             if len(data_lines) > 1:
-                latest = data_lines[-2]
+                idx -= 1
+                latest = data_lines[idx]
                 date_str = latest[0]
                 value = latest[1] if len(latest) > 1 else None
- 
-        try:
-            dt = datetime.strptime(date_str, "%d %b %Y")
-            period = dt.strftime("%b %Y")
-        except ValueError:
-            period = date_str
- 
-        return {"value": value, "period": period}
- 
+
+        def _fmt_period(ds):
+            try:
+                return datetime.strptime(ds, "%d %b %Y").strftime("%b %Y")
+            except ValueError:
+                return ds
+
+        result = {"value": value, "period": _fmt_period(date_str)}
+
+        # Previous observation (skip incomplete cells) for the trend badge
+        j = idx - 1
+        while j >= 0:
+            pv = data_lines[j][1] if len(data_lines[j]) > 1 else None
+            if pv and pv not in ("", ".", ".."):
+                result["prev"] = {"value": pv, "period": _fmt_period(data_lines[j][0])}
+                break
+            j -= 1
+
+        return result
+
     except Exception as e:
         error(f"BoE {series_code} ({label}): {e}")
         return None
- 
- 
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 #  MHCLG LIVE TABLE 213
 # ═══════════════════════════════════════════════════════════════════════════════
- 
+
 def fetch_mhclg_table213() -> dict | None:
     """
     Download MHCLG Live Table 213 (permanent dwellings completed, England).
@@ -250,11 +285,11 @@ def fetch_mhclg_table213() -> dict | None:
     page_url = "https://www.gov.uk/government/statistical-data-sets/live-tables-on-house-building"
     try:
         import openpyxl
- 
+
         r = SESSION.get(page_url, timeout=20)
         r.raise_for_status()
         soup = BeautifulSoup(r.text, "html.parser")
- 
+
         # Find the Table 213 Excel download link
         file_url = None
         for link in soup.find_all("a", href=True):
@@ -265,7 +300,7 @@ def fetch_mhclg_table213() -> dict | None:
                 if re.search(r"\.(xlsx?)$", href, re.I):
                     file_url = href if href.startswith("http") else "https://www.gov.uk" + href
                     break
- 
+
         if not file_url:
             # Broader search in assets URLs
             for link in soup.find_all("a", href=re.compile(r"LiveTable213|table213|Table213", re.I)):
@@ -273,17 +308,17 @@ def fetch_mhclg_table213() -> dict | None:
                 if not file_url.startswith("http"):
                     file_url = "https://www.gov.uk" + file_url
                 break
- 
+
         if not file_url:
             warn("MHCLG Table 213: download link not found on page")
             return None
- 
+
         log(f"  MHCLG Table 213: {file_url}")
         xr = SESSION.get(file_url, timeout=60)
         xr.raise_for_status()
- 
+
         wb = openpyxl.load_workbook(io.BytesIO(xr.content), data_only=True)
- 
+
         # Find the "213" worksheet
         ws = None
         for name in wb.sheetnames:
@@ -292,9 +327,9 @@ def fetch_mhclg_table213() -> dict | None:
                 break
         if ws is None:
             ws = wb.active
- 
+
         rows = list(ws.iter_rows(values_only=True))
- 
+
         # Find header row containing tenure column labels.
         # Table 213 has columns: Period | ...Starts... | All Starts | ...Completions... | All Completions | Notes
         # We want the COMPLETIONS columns only (they come after the Starts block).
@@ -321,13 +356,14 @@ def fetch_mhclg_table213() -> dict | None:
                         col_map["total"] = j
                 if col_map:
                     break
- 
+
         if not header_idx or not col_map:
             warn("MHCLG Table 213: could not identify header columns")
             return None
- 
-        # Find the last quarterly data row
+
+        # Find the last two quarterly data rows (latest + previous, for trend badges)
         result = {}
+        rows_found = 0
         for row in reversed(rows[header_idx + 1:]):
             if not row[0]:
                 continue
@@ -335,29 +371,31 @@ def fetch_mhclg_table213() -> dict | None:
             # Quarterly format: "2025 Q3" or "2025Q3" or "Q3 2025"
             if not re.search(r"Q[1-4]", period_str, re.I):
                 continue
+            rows_found += 1
             for key, col_idx in col_map.items():
                 if col_idx < len(row) and row[col_idx] is not None:
                     try:
-                        result[key] = {
-                            "value": str(int(float(str(row[col_idx]).replace(",", "")))),
-                            "period": period_str
-                        }
+                        v = str(int(float(str(row[col_idx]).replace(",", ""))))
                     except (ValueError, TypeError):
-                        pass
-            if result:
+                        continue
+                    if rows_found == 1:
+                        result[key] = {"value": v, "period": period_str}
+                    elif key in result and "prev" not in result[key]:
+                        result[key]["prev"] = {"value": v, "period": period_str}
+            if rows_found >= 2:
                 break
- 
+
         return result if result else None
- 
+
     except Exception as e:
         error(f"MHCLG Table 213: {e}")
         return None
- 
- 
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 #  STATS WALES
 # ═══════════════════════════════════════════════════════════════════════════════
- 
+
 
 SW_API = "https://api.stats.gov.wales/v1"
 SW_TOPIC_NEW_HOUSE_BUILDING = 66
@@ -398,15 +436,21 @@ def fetch_stats_wales_completions() -> dict | None:
                                 collect(ch)
                 collect(filt.get("values", []))
                 if qrefs:
-                    latest_ref, latest_desc = max(qrefs, key=lambda x: x[0])
+                    qrefs.sort(key=lambda x: x[0])
+                    latest_ref, latest_desc = qrefs[-1]
+                    if len(qrefs) > 1:
+                        prev_ref, prev_desc = qrefs[-2]
+                    else:
+                        prev_ref = prev_desc = None
         if not latest_ref:
             warn("StatsWales: no quarterly period found")
             return None
-        # 3. pull Wales totals for the latest quarter (JSON filter, reference codes)
+        # 3. pull Wales totals for the latest two quarters (JSON filter, reference codes)
         import json as _json
+        period_values = [latest_ref] + ([prev_ref] if prev_ref else [])
         filt = _json.dumps([
             {"columnName": "LACode", "values": ["600"]},          # Wales
-            {"columnName": "Period", "values": [latest_ref]},
+            {"columnName": "Period", "values": period_values},
             {"columnName": "DwellingType", "values": ["3"]},      # Total
             {"columnName": "Bedroom", "values": ["5"]},           # Total
         ])
@@ -415,7 +459,7 @@ def fetch_stats_wales_completions() -> dict | None:
         })
         v.raise_for_status()
         body = v.json()
-        out = {}
+        out, prev_vals = {}, {}
         for row in body.get("data", []):
             cells = [str(x).strip() for x in row]
             if len(cells) < 6:
@@ -423,15 +467,21 @@ def fetch_stats_wales_completions() -> dict | None:
             value, measure, period_desc, area, dtype, bed = cells[:6]
             if area != "Wales" or dtype != "Total" or bed != "Total":
                 continue
-            if period_desc != latest_desc:
-                continue
             n = _num(value)
             if n is None:
                 continue
-            if measure.lower().startswith("total new dwellings completed"):
-                out["total"] = _latest(_fmt(n, 0), latest_desc)
-            elif measure.lower().startswith("private enterprise"):
-                out["private"] = _latest(_fmt(n, 0), latest_desc)
+            ml = measure.lower()
+            key = ("total" if ml.startswith("total new dwellings completed")
+                   else "private" if ml.startswith("private enterprise") else None)
+            if not key:
+                continue
+            if period_desc == latest_desc:
+                out[key] = _latest(_fmt(n, 0), latest_desc)
+            elif prev_desc and period_desc == prev_desc:
+                prev_vals[key] = {"value": _fmt(n, 0), "period": prev_desc}
+        for key, pv in prev_vals.items():
+            if key in out:
+                out[key]["prev"] = pv
         return out or None
     except Exception as e:
         warn(f"StatsWales API: {e}")
@@ -441,10 +491,10 @@ def fetch_stats_wales_completions() -> dict | None:
 def fetch_moj_possession() -> dict | None:
     """
     Fetch landlord possession statistics from MoJ / HMCTS.
- 
+
     The MoJ publishes a CSV zip containing court-level data in long format:
         Year, Quarter, possession_type, possession_action, court, region, value
- 
+
     We find the latest publication, download the zip, read the court-level CSV,
     and aggregate national totals by summing across all courts for the latest quarter.
     """
@@ -456,7 +506,7 @@ def fetch_moj_possession() -> dict | None:
         r = SESSION.get(collection_url, timeout=20)
         r.raise_for_status()
         soup = BeautifulSoup(r.text, "html.parser")
- 
+
         # Find the most recent publication link
         pub_url = None
         for link in soup.find_all("a", href=re.compile(
@@ -467,18 +517,18 @@ def fetch_moj_possession() -> dict | None:
                 href = "https://www.gov.uk" + href
             pub_url = href
             break
- 
+
         if not pub_url:
             warn("MoJ: could not find latest publication link")
             return None
- 
+
         log(f"  MoJ: latest publication → {pub_url}")
- 
+
         # Find the CSV zip on the publication page
         pr = SESSION.get(pub_url, timeout=20)
         pr.raise_for_status()
         psoup = BeautifulSoup(pr.text, "html.parser")
- 
+
         csv_zip_url = None
         for link in psoup.find_all("a", href=re.compile(r"CSVs\.zip", re.I)):
             csv_zip_url = link["href"]
@@ -487,156 +537,165 @@ def fetch_moj_possession() -> dict | None:
             for link in psoup.find_all("a", href=re.compile(r"\.zip$", re.I)):
                 csv_zip_url = link["href"]
                 break
- 
+
         if not csv_zip_url:
             warn("MoJ: CSV zip download link not found on publication page")
             return None
- 
+
         log(f"  MoJ: downloading CSV zip from {csv_zip_url}")
         zr = SESSION.get(csv_zip_url, timeout=60)
         zr.raise_for_status()
- 
+
         return _parse_moj_court_csv(zr.content)
- 
+
     except Exception as e:
         error(f"MoJ possession: {e}")
         return None
- 
- 
+
+
 def _parse_moj_court_csv(zip_content: bytes) -> dict | None:
     """
     Parse the MoJ court-level CSV (long format) and aggregate national totals.
- 
+
     Expected CSV columns:
         Year, Quarter, possession_type, possession_action, court, region, value
- 
+
     possession_type values: Accelerated_Landlord, Private_Landlord,
                             Social_Landlord, Mortgage, Other
     possession_action values: Claims, Outright_Orders, Suspended_Orders,
                               Warrants, Repossessions, Other
- 
+
     We sum across all courts to get England & Wales national figures.
     """
     try:
         z = zipfile.ZipFile(io.BytesIO(zip_content))
         names = z.namelist()
         log(f"  MoJ zip contents: {names}")
- 
+
         # Find the court-level CSV
         court_csv_name = None
         for name in names:
             if "court" in name.lower() and name.lower().endswith(".csv"):
                 court_csv_name = name
                 break
- 
+
         if not court_csv_name:
             warn("MoJ: court CSV not found in zip")
             return None
- 
+
         rows = _read_csv_from_zip(z, court_csv_name)
         if not rows:
             return None
- 
+
         # Parse column positions from header
         header = [h.strip().lower() for h in rows[0]]
         def col(name): return next((i for i, h in enumerate(header) if name in h), None)
- 
+
         year_col   = col("year")
         qtr_col    = col("quarter")
         type_col   = col("possession_type") or col("type")
         action_col = col("possession_action") or col("action")
         value_col  = col("value")
- 
+
         if any(c is None for c in [year_col, qtr_col, type_col, action_col, value_col]):
             warn(f"MoJ: unexpected CSV columns: {header}")
             return None
- 
+
         # Find the latest quarter available
         quarters = set()
         for row in rows[1:]:
             if len(row) > qtr_col and re.search(r"Q[1-4]", row[qtr_col], re.I):
                 quarters.add((row[year_col], row[qtr_col]))
- 
+
         if not quarters:
             warn("MoJ: no quarterly data found")
             return None
- 
-        latest_year, latest_qtr = max(quarters, key=lambda x: (x[0], x[1]))
+
+        ordered_q = sorted(quarters, key=lambda x: (x[0], x[1]))
+        latest_year, latest_qtr = ordered_q[-1]
+        prior = ordered_q[-2] if len(ordered_q) > 1 else None
         period = f"{latest_year} {latest_qtr}"
+        prev_period = f"{prior[0]} {prior[1]}" if prior else None
         log(f"  MoJ: latest quarter = {period}")
- 
-        # Aggregate by summing across all courts for the latest quarter
+
+        # Aggregate by summing across all courts, for the latest and prior quarter
         totals: dict[tuple, int] = {}
+        prev_totals: dict[tuple, int] = {}
         for row in rows[1:]:
             if len(row) <= value_col:
                 continue
-            if row[year_col] != latest_year or row[qtr_col] != latest_qtr:
+            yq = (row[year_col], row[qtr_col])
+            if yq == (latest_year, latest_qtr):
+                bucket = totals
+            elif prior and yq == prior:
+                bucket = prev_totals
+            else:
                 continue
             key = (row[type_col], row[action_col])
             try:
-                totals[key] = totals.get(key, 0) + int(float(row[value_col]))
+                bucket[key] = bucket.get(key, 0) + int(float(row[value_col]))
             except (ValueError, TypeError):
                 pass
- 
+
         log(f"  MoJ aggregated {len(totals)} (type, action) combinations")
- 
-        def get(ptype, action):
-            return totals.get((ptype, action), 0)
- 
+
+        def get(ptype, action, bucket=None):
+            return (bucket if bucket is not None else totals).get((ptype, action), 0)
+
+        def entry(value, prev_value):
+            d = {"value": str(value), "period": period}
+            if prev_value and prev_period:
+                d["prev"] = {"value": str(prev_value), "period": prev_period}
+            return d
+
         result = {}
- 
+        LANDLORDS = ("Accelerated_Landlord", "Private_Landlord", "Social_Landlord")
+
         # Total landlord possession claims (all landlord types)
-        total_claims = (
-            get("Accelerated_Landlord", "Claims") +
-            get("Private_Landlord",     "Claims") +
-            get("Social_Landlord",      "Claims")
-        )
+        total_claims = sum(get(t, "Claims") for t in LANDLORDS)
         if total_claims:
-            result["claims_issued"] = {"value": str(total_claims), "period": period}
- 
+            result["claims_issued"] = entry(
+                total_claims, sum(get(t, "Claims", prev_totals) for t in LANDLORDS))
+
         # Total landlord repossessions by bailiff
-        total_repos = (
-            get("Accelerated_Landlord", "Repossessions") +
-            get("Private_Landlord",     "Repossessions") +
-            get("Social_Landlord",      "Repossessions")
-        )
+        total_repos = sum(get(t, "Repossessions") for t in LANDLORDS)
         if total_repos:
-            result["repossessions_bailiffs"] = {"value": str(total_repos), "period": period}
- 
+            result["repossessions_bailiffs"] = entry(
+                total_repos, sum(get(t, "Repossessions", prev_totals) for t in LANDLORDS))
+
         # Private sector claims (private + accelerated landlords)
-        prs_claims = (
-            get("Private_Landlord",     "Claims") +
-            get("Accelerated_Landlord", "Claims")
-        )
+        prs_claims = get("Private_Landlord", "Claims") + get("Accelerated_Landlord", "Claims")
         if prs_claims:
-            result["claims_prs"] = {"value": str(prs_claims), "period": period}
- 
+            result["claims_prs"] = entry(
+                prs_claims,
+                get("Private_Landlord", "Claims", prev_totals) + get("Accelerated_Landlord", "Claims", prev_totals))
+
         # Accelerated procedure claims only
         acc = get("Accelerated_Landlord", "Claims")
         if acc:
-            result["claims_accelerated"] = {"value": str(acc), "period": period}
- 
+            result["claims_accelerated"] = entry(acc, get("Accelerated_Landlord", "Claims", prev_totals))
+
         return result if result else None
- 
+
     except Exception as e:
         error(f"MoJ court CSV parse: {e}")
         return None
- 
- 
+
+
 def _read_csv_from_zip(z: zipfile.ZipFile, name: str) -> list[list[str]]:
     """Read a CSV file from a zip archive, returning a list of rows."""
     with z.open(name) as f:
         content = f.read().decode("utf-8-sig", errors="replace")
         reader = csv.reader(io.StringIO(content))
         return list(reader)
- 
- 
- 
- 
+
+
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 #  ANNUAL RELEASE DETECTION (EHS / FRS)
 # ═══════════════════════════════════════════════════════════════════════════════
- 
+
 def find_latest_annual_release(collection_url: str, publication_pattern: str,
                                label: str) -> tuple[str | None, str | None]:
     """
@@ -647,10 +706,10 @@ def find_latest_annual_release(collection_url: str, publication_pattern: str,
         r = SESSION.get(collection_url, timeout=15)
         r.raise_for_status()
         soup = BeautifulSoup(r.text, "html.parser")
- 
+
         year_pattern = re.compile(r"20\d\d")
         pub_links = soup.find_all("a", href=re.compile(publication_pattern, re.I))
- 
+
         best_link = None
         best_year = 0
         for link in pub_links:
@@ -659,31 +718,31 @@ def find_latest_annual_release(collection_url: str, publication_pattern: str,
                 if int(y) > best_year:
                     best_year = int(y)
                     best_link = link
- 
+
         if best_link:
             href = best_link["href"]
             if not href.startswith("http"):
                 href = "https://www.gov.uk" + href
             log(f"  {label}: latest release → {href} ({best_year})")
             return href, str(best_year)
- 
+
         warn(f"{label}: no release link found at {collection_url}")
         return None, None
- 
+
     except Exception as e:
         error(f"{label} collection page: {e}")
         return None, None
- 
- 
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 #  JSON FILE HELPERS
 # ═══════════════════════════════════════════════════════════════════════════════
- 
+
 def load_json(path: Path) -> dict:
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
- 
- 
+
+
 def save_json(path: Path, data: dict) -> bool:
     """Write JSON. Returns True if content changed."""
     new_content = json.dumps(data, indent=2, ensure_ascii=False)
@@ -693,30 +752,66 @@ def save_json(path: Path, data: dict) -> bool:
             return False
     path.write_text(new_content, encoding="utf-8")
     return True
- 
- 
+
+
 def now_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
- 
- 
+
+
+def _trend_for(new_value, prev_value):
+    """Compare two stored values numerically → 'up' / 'down' / 'same' / None."""
+    try:
+        nv = float(str(new_value).replace(",", ""))
+        pv = float(str(prev_value).replace(",", ""))
+    except (TypeError, ValueError):
+        return None
+    if nv > pv:
+        return "up"
+    if nv < pv:
+        return "down"
+    return "same"
+
+
 def update_dataset(datasets: list, dataset_id: str, fetched: dict | None) -> bool:
-    """Update a dataset entry in-place. Returns True if changed."""
+    """Update a dataset entry in-place. Returns True if changed.
+
+    Previous-release tracking (powers the dashboard trend badges):
+      1. prefer a `prev` supplied by the fetcher (sources that publish history);
+      2. else, when the period rolls over, the old `latest` becomes `prev`;
+      3. else carry the existing `prev` forward (same-period revision).
+    A `trend` field (up/down/same) is stored alongside.
+    """
     if not fetched or fetched.get("value") is None:
         return False
     for ds in datasets:
         if ds["id"] == dataset_id:
-            old = ds.get("latest", {})
+            old = ds.get("latest", {}) or {}
             new_val = {
                 "value": str(fetched["value"]),
                 "period": fetched.get("period", old.get("period")),
                 "fetched_at": now_iso()
             }
-            if old.get("value") != new_val["value"] or old.get("period") != new_val["period"]:
+            prev = None
+            f_prev = fetched.get("prev")
+            if f_prev and f_prev.get("value") is not None and f_prev.get("period") != new_val["period"]:
+                prev = {"value": str(f_prev["value"]), "period": f_prev.get("period")}
+            elif old.get("value") is not None and old.get("period") and old["period"] != new_val["period"]:
+                prev = {"value": old["value"], "period": old["period"]}
+            elif old.get("prev"):
+                prev = old["prev"]
+            if prev:
+                new_val["prev"] = prev
+                t = _trend_for(new_val["value"], prev["value"])
+                if t:
+                    new_val["trend"] = t
+            if (old.get("value") != new_val["value"]
+                    or old.get("period") != new_val["period"]
+                    or old.get("prev") != new_val.get("prev")):
                 ds["latest"] = new_val
                 return True
     return False
- 
- 
+
+
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -804,7 +899,7 @@ def fetch_frs_tenure() -> dict | None:
         pr.raise_for_status()
         psoup = BeautifulSoup(pr.text, "html.parser")
         xlsx_url = None
-        for a in psoup.find_all("a", href=re.compile(r"ch3_tenure\.xlsx$")):
+        for a in psoup.find_all("a", href=re.compile(r"ch3[_-]tenure\.xlsx$")):  # DWP alternates _ and -
             xlsx_url = a["href"]
             break
         if not xlsx_url:
@@ -962,16 +1057,24 @@ def fetch_ehs_annex() -> dict | None:
             # year rows look like '2024-25' in col 1
             yr_rows = [i for i, v in df[1].items() if pd.notna(v) and re.match(r"^\d{4}-\d{2}$", str(v).strip())]
             if yr_rows:
-                i = yr_rows[-1]
-                period = str(df.iat[i, 1]).strip()
-                owners_all = _num(df.iat[i, 4])   # all owner occupiers
-                prs = _num(df.iat[i, 5])          # private renters (000s)
-                social = _num(df.iat[i, 8])       # all social renters
+                def tenure_row(i):
+                    owners = _num(df.iat[i, 4])
+                    prs = _num(df.iat[i, 5])
+                    social = _num(df.iat[i, 8])
+                    pct = prs / (owners + prs + social) * 100 if (prs and owners and social) else None
+                    return str(df.iat[i, 1]).strip(), prs, pct
+
+                period, prs, pct = tenure_row(yr_rows[-1])
                 if prs is not None:
                     out["households_tenure"] = _latest(_fmt(prs, 0), period)
-                    if owners_all and social:
-                        pct = prs / (owners_all + prs + social) * 100
+                    if pct is not None:
                         out["households_tenure_pct"] = _latest(_fmt(pct, 1), period)
+                    if len(yr_rows) > 1:
+                        p_period, p_prs, p_pct = tenure_row(yr_rows[-2])
+                        if p_prs is not None and "households_tenure" in out:
+                            out["households_tenure"]["prev"] = {"value": _fmt(p_prs, 0), "period": p_period}
+                        if p_pct is not None and "households_tenure_pct" in out:
+                            out["households_tenure_pct"]["prev"] = {"value": _fmt(p_pct, 1), "period": p_period}
 
         # AT1_2: tenure by region — London block, PRS share of all households, latest col
         df = sh.get("AT1_2")
@@ -979,13 +1082,19 @@ def fetch_ehs_annex() -> dict | None:
             lon_i = _find_row(df, r"^London$")
             if lon_i is not None:
                 # rows below London: owner occupiers / own outright / buying / private renters / social renters
-                block = {}
+                block, block_prev = {}, {}
                 for i in range(lon_i + 1, min(lon_i + 9, len(df))):
                     label = str(df.iat[i, 1]).strip().lower() if pd.notna(df.iat[i, 1]) else ""
                     if label in ("owner occupiers", "private renters", "social renters", "all households", "all tenures"):
                         v, c = _last_num_in_row(df, i)
                         if v is not None:
                             block[label] = v
+                            pv = _num(df.iat[i, c - 1]) if c and c > 2 else None
+                            if pv is not None:
+                                block_prev[label] = pv
+                # previous survey year is one before the latest (years run annually with a 2020-21 gap)
+                ly = int(year_label.split("-")[0]) if year_label else None
+                prev_year_label = f"{ly - 1}-{str(ly)[2:]}" if ly else None
                 prs = block.get("private renters")
                 total = block.get("all households") or block.get("all tenures") or \
                     (sum(v for k, v in block.items() if k in ("owner occupiers", "private renters", "social renters")) or None)
@@ -993,6 +1102,13 @@ def fetch_ehs_annex() -> dict | None:
                     out["tenure_by_region"] = _latest(
                         _fmt(prs / total * 100, 1), year_label,
                         notes_hint="London PRS share")
+                    # previous column = previous survey year
+                    pp = block_prev.get("private renters")
+                    pt = block_prev.get("all households") or block_prev.get("all tenures") or \
+                        (sum(v for k, v in block_prev.items() if k in ("owner occupiers", "private renters", "social renters")) or None)
+                    if pp and pt and prev_year_label:
+                        out["tenure_by_region"]["prev"] = {
+                            "value": _fmt(pp / pt * 100, 1), "period": prev_year_label}
 
         # AT1_9: vacant dwellings by tenure — England total dwellings (occupied + vacant)
         df = sh.get("AT1_9")
@@ -1016,14 +1132,23 @@ def fetch_ehs_annex() -> dict | None:
                         break
                 latest_col = count_cols[-1]
                 latest_yr = str(int(dict(yr_hdr)[latest_col]))
-                total = 0.0
+                total, prev_total = 0.0, 0.0
+                prev_col = count_cols[-2] if len(count_cols) > 1 else None
                 for i, v in df[1].items():
                     if pd.notna(v) and re.match(r"^all (owner|private|social)", str(v).strip(), re.I):
                         n = _num(df.iat[i, latest_col])
                         if n:
                             total += n
+                        if prev_col is not None:
+                            pn = _num(df.iat[i, prev_col])
+                            if pn:
+                                prev_total += pn
                 if total:
                     out["dwellings_vacant"] = _latest(_fmt(total, 0), latest_yr)
+                    if prev_total and prev_col is not None:
+                        out["dwellings_vacant"]["prev"] = {
+                            "value": _fmt(prev_total, 0),
+                            "period": str(int(dict(yr_hdr)[prev_col]))}
 
         # AT1_6: stock profile — dwelling age (pre-1919 PRS share), rural/urban split
         df = sh.get("AT1_6")
@@ -1100,22 +1225,34 @@ def fetch_ehs_annex() -> dict | None:
                     out["mean_weekly_rents"] = _latest(_fmt(mean_prs, 0), period)
                 if median_prs is not None:
                     out["median_weekly_rents"] = _latest(_fmt(median_prs, 0), period)
+                if len(yr_rows) > 1:
+                    pi = yr_rows[-2]
+                    p_period = str(df.iat[pi, 1]).strip()
+                    p_mean, p_median = _num(df.iat[pi, 2]), _num(df.iat[pi, 8])
+                    if p_mean is not None and "mean_weekly_rents" in out:
+                        out["mean_weekly_rents"]["prev"] = {"value": _fmt(p_mean, 0), "period": p_period}
+                    if p_median is not None and "median_weekly_rents" in out:
+                        out["median_weekly_rents"]["prev"] = {"value": _fmt(p_median, 0), "period": p_period}
 
         # AT2_5: rent as % of income — private renters, latest year row whose value
         # is a plausible percentage (later blocks in the sheet hold sample sizes)
         df = sh.get("AT2_5")
         if df is not None:
             yr_rows = [i for i, v in df[1].items() if pd.notna(v) and re.match(r"^\d{4}-\d{2}$", str(v).strip())]
-            best = None
+            plausible = []
             for i in yr_rows:
                 v = _num(df.iat[i, 3])  # private renters column
                 if v is not None and 0 < v <= 100:
-                    best = (i, v)
-            if best:
-                i, v = best
+                    plausible.append((i, v))
+            if plausible:
+                i, v = plausible[-1]
                 out["rent_as_pct_income"] = _latest(
                     _fmt(v, 1), str(df.iat[i, 1]).strip(),
                     notes_hint="household income basis, incl. housing support")
+                if len(plausible) > 1:
+                    pi, pv = plausible[-2]
+                    out["rent_as_pct_income"]["prev"] = {
+                        "value": _fmt(pv, 1), "period": str(df.iat[pi, 1]).strip()}
 
     # ── Housing quality ──
     if "quality" in files:
@@ -1137,23 +1274,26 @@ def fetch_ehs_annex() -> dict | None:
                 return None, None
             for i, v in df[1].items():
                 if pd.notna(v) and str(v).strip().lower() == "private rented":
-                    # rightmost numeric in year columns
-                    best = None
+                    # rightmost numerics in year columns (latest + previous)
+                    vals = []
                     for c in sorted(yr_map):
                         n = _num(df.iat[i, c])
                         if n is not None:
-                            best = (n, yr_map[c])
-                    if best and 0 < best[0] <= 100:
-                        return best
-            return None, None
+                            vals.append((n, yr_map[c]))
+                    if vals and 0 < vals[-1][0] <= 100:
+                        prev = vals[-2] if len(vals) > 1 and 0 < vals[-2][0] <= 100 else None
+                        return vals[-1] + (prev,)
+            return None, None, None
 
         for sheet, key in (("AT1_4", "non_decent_homes"), ("AT1_6", "hhsrs_cat1")):
             df = sh.get(sheet)
             if df is None:
                 continue
-            v, yr = prs_pct_from_year_cols(df)
+            v, yr, prev = prs_pct_from_year_cols(df)
             if v is not None:
                 out[key] = _latest(_fmt(v, 1), str(yr))
+                if prev:
+                    out[key]["prev"] = {"value": _fmt(prev[0], 1), "period": str(prev[1])}
 
         # AT1_10: damp problems by tenure — percentage block, 'any damp problem' col
         df = sh.get("AT1_10")
@@ -1197,7 +1337,7 @@ def fetch_ehs_annex() -> dict | None:
                     pr_i = i
                     break
             if None not in (atoc_col, all_col, pr_i):
-                latest = None
+                year_vals = []
                 for i in range(pr_i + 1, min(pr_i + 6, len(df))):
                     label = str(df.iat[i, 1]).strip() if pd.notna(df.iat[i, 1]) else ""
                     if label and not re.match(r"^\d{4}$", label):
@@ -1205,9 +1345,12 @@ def fetch_ehs_annex() -> dict | None:
                     if re.match(r"^\d{4}$", label):
                         atoc, alln = _num(df.iat[i, atoc_col]), _num(df.iat[i, all_col])
                         if atoc and alln:
-                            latest = (atoc / alln * 100, label)
-                if latest:
-                    out["energy_efficiency"] = _latest(_fmt(latest[0], 1), latest[1])
+                            year_vals.append((atoc / alln * 100, label))
+                if year_vals:
+                    out["energy_efficiency"] = _latest(_fmt(year_vals[-1][0], 1), year_vals[-1][1])
+                    if len(year_vals) > 1:
+                        out["energy_efficiency"]["prev"] = {
+                            "value": _fmt(year_vals[-2][0], 1), "period": year_vals[-2][1]}
 
     return out or None
 
@@ -1258,21 +1401,33 @@ def fetch_moj_timeliness() -> dict | None:
             recs.setdefault((year, q), {})[ltype] = row
         if not recs:
             return None
-        latest = max(recs.keys(), key=lambda k: (k[0], k[1]))
+        ordered = sorted(recs.keys(), key=lambda k: (k[0], k[1]))
+        latest = ordered[-1]
+        prior = ordered[-2] if len(ordered) > 1 else None
         period = f"{latest[0]} {latest[1]}"
         block = recs[latest]
+        pblock = recs.get(prior, {}) if prior else {}
+        pperiod = f"{prior[0]} {prior[1]}" if prior else None
+
+        def with_prev(entry, ltype, field):
+            if pblock.get(ltype) is not None and pperiod:
+                pv = _num(pblock[ltype].get(field))
+                if pv is not None:
+                    entry["prev"] = {"value": _fmt(pv, 1), "period": pperiod}
+            return entry
+
         out = {}
         if "All" in block:
             mean_v = _num(block["All"].get("MeanTime_Order"))
             med_v = _num(block["All"].get("MedTime_Order"))
             if mean_v is not None:
-                out["mean_time_all"] = _latest(_fmt(mean_v, 1), period)
+                out["mean_time_all"] = with_prev(_latest(_fmt(mean_v, 1), period), "All", "MeanTime_Order")
             if med_v is not None:
-                out["median_time_all"] = _latest(_fmt(med_v, 1), period)
+                out["median_time_all"] = with_prev(_latest(_fmt(med_v, 1), period), "All", "MedTime_Order")
         if "Private_Landlord" in block:
             v = _num(block["Private_Landlord"].get("MeanTime_Order"))
             if v is not None:
-                out["mean_time_prs"] = _latest(_fmt(v, 1), period)
+                out["mean_time_prs"] = with_prev(_latest(_fmt(v, 1), period), "Private_Landlord", "MeanTime_Order")
         return out or None
     except Exception as e:
         warn(f"MoJ timeliness: {e}")
@@ -1341,20 +1496,31 @@ def fetch_mlar() -> dict | None:
         ia = section_line(rows121, "A", 1, "gross advances")
         ib = section_line(rows121, "B", 1, "gross advances")
         if ia is not None and ib is not None and p121:
-            c = max(c for c in p121 if _num(rows121[ia][c]) is not None)
+            cols = sorted(c for c in p121 if _num(rows121[ia][c]) is not None)
+            c = cols[-1]
             total_m = (_num(rows121[ia][c]) or 0) + (_num(rows121[ib][c]) or 0)
             if total_m:
                 out["gross_advances"] = _latest(_fmt(total_m / 1000, 1), p121[c])
+                if len(cols) > 1:
+                    pc = cols[-2]
+                    prev_m = (_num(rows121[ia][pc]) or 0) + (_num(rows121[ib][pc]) or 0)
+                    if prev_m:
+                        out["gross_advances"]["prev"] = {"value": _fmt(prev_m / 1000, 1), "period": p121[pc]}
 
         # ── 1.33 BTL share: section C line 4 ──
         rows133 = grid("1.33")
         p133 = period_cols(rows133)
         ic = section_line(rows133, "C", 4, "buy to let")
         if ic is not None and p133:
-            c = max(c for c in p133 if _num(rows133[ic][c]) is not None)
+            cols = sorted(c for c in p133 if _num(rows133[ic][c]) is not None)
+            c = cols[-1]
             v = _num(rows133[ic][c])
             if v is not None and 0 < v < 100:
                 out["btl_proportion"] = _latest(_fmt(v, 1), p133[c])
+                if len(cols) > 1:
+                    pv = _num(rows133[ic][cols[-2]])
+                    if pv is not None and 0 < pv < 100:
+                        out["btl_proportion"]["prev"] = {"value": _fmt(pv, 1), "period": p133[cols[-2]]}
         return out or None
     except Exception as e:
         warn(f"MLAR: {e}")
@@ -1364,7 +1530,7 @@ def fetch_mlar() -> dict | None:
 # ═══════════════════════════════════════════════════════════════════════════════
 #  SECTION RUNNERS
 # ═══════════════════════════════════════════════════════════════════════════════
- 
+
 
 def update_macro():
     log("=== Updating Macro-Economic data ===")
@@ -1372,14 +1538,14 @@ def update_macro():
     data = load_json(path)
     ds = data["datasets"]
     changed = False
- 
+
     # Auto-remove any datasets marked as ceased (keeps GitHub JSON clean)
     original_len = len(ds)
     ds[:] = [d for d in ds if d.get("status") != "ceased"]
     if len(ds) < original_len:
         log(f"  Removed {original_len - len(ds)} ceased dataset(s)")
         changed = True
- 
+
     ons_cdid_map = {
         "cpi_annual_rate":      "D7G7",
         "cpi_index":            "D7BT",
@@ -1391,7 +1557,7 @@ def update_macro():
         "real_earnings_index":  "A2FD",
         "real_earnings_growth": "A3WV",
     }
- 
+
     for dataset_id, cdid in ons_cdid_map.items():
         log(f"  ONS {cdid} → {dataset_id}")
         result = fetch_ons_timeseries(cdid)
@@ -1401,7 +1567,7 @@ def update_macro():
         else:
             log(f"    No change (fetched: {result})")
         time.sleep(0.3)
- 
+
     # PIPR — Price Index of Private Rents (UK annual rate + index)
     # Downloaded from the ONS dataset xlsx (the bulletin scrape was unreliable).
     log("  PIPR (UK): annual rate + index")
@@ -1416,7 +1582,7 @@ def update_macro():
     else:
         log("    No PIPR data retrieved")
     time.sleep(0.3)
- 
+
     # Bank of England base rate
     log("  BoE base rate (IUMABEDR)")
     boe_rate = fetch_boe_series("IUMABEDR", "base rate")
@@ -1425,7 +1591,7 @@ def update_macro():
         changed = True
     else:
         log(f"    No change (fetched: {boe_rate})")
- 
+
     # MLAR — residential gross advances + buy-to-let share.
     # The BoE IADB blocks the MLAR series, so we parse the FCA's co-published
     # long-run detailed tables instead (Table 1.21 §A+§B and Table 1.33 §C).
@@ -1440,15 +1606,15 @@ def update_macro():
             changed = True
     else:
         log("    No MLAR data retrieved")
- 
+
     if changed:
         data["last_fetched"] = now_iso()
         save_json(path, data)
         log("  macro.json saved ✓")
     else:
         log("  No changes to macro.json")
- 
- 
+
+
 
 def update_housing_tenure():
     log("=== Updating Housing Trends (FRS) ===")
@@ -1487,7 +1653,7 @@ def update_dwellings():
     data = load_json(path)
     ds = data["datasets"]
     changed = False
- 
+
     log("  MHCLG Table 213 (England completions)")
     mhclg = fetch_mhclg_table213()
     if mhclg:
@@ -1500,7 +1666,7 @@ def update_dwellings():
             if key in mhclg and update_dataset(ds, dst_id, mhclg[key]):
                 log(f"    {dst_id}: {mhclg[key]}")
                 changed = True
- 
+
     log("  Stats Wales (Wales completions)")
     wales = fetch_stats_wales_completions()
     if wales:
@@ -1511,27 +1677,27 @@ def update_dwellings():
             if key in wales and update_dataset(ds, dst_id, wales[key]):
                 log(f"    {dst_id}: {wales[key]}")
                 changed = True
- 
+
     if changed:
         data["last_fetched"] = now_iso()
         save_json(path, data)
         log("  dwellings.json saved ✓")
     else:
         log("  No changes to dwellings.json")
- 
- 
+
+
 
 def update_possession():
     log("=== Updating Claims & Bailiffs (MoJ) ===")
     path = DATA_DIR / "possession.json"
     data = load_json(path)
     ds = data["datasets"]
- 
+
     moj = fetch_moj_possession()
     if not moj:
         log("  No MoJ data retrieved")
         return
- 
+
     changed = False
     # Timeliness (mean/median weeks claim→order) lives in the Tables ODS,
     # not the CSV zip — fetch and merge it in.
@@ -1552,15 +1718,15 @@ def update_possession():
         if moj_key in moj and update_dataset(ds, ds_id, moj[moj_key]):
             log(f"  {ds_id}: {moj[moj_key]}")
             changed = True
- 
+
     if changed:
         data["last_fetched"] = now_iso()
         save_json(path, data)
         log("  possession.json saved ✓")
     else:
         log("  No changes to possession.json")
- 
- 
+
+
 
 def update_ehs():
     log("=== Updating English Housing Survey ===")
@@ -1605,11 +1771,11 @@ def update_ehs():
 def main():
     log(f"NRLA Data Dashboard updater — {datetime.now().strftime('%Y-%m-%d %H:%M UTC')}")
     log(f"Data directory: {DATA_DIR}")
- 
+
     if not DATA_DIR.exists():
         error(f"Data directory not found: {DATA_DIR}")
         sys.exit(1)
- 
+
     errors = []
     for label, fn in [
         ("Macro-Economic",  update_macro),
@@ -1624,7 +1790,7 @@ def main():
             msg = f"{label}: unexpected error — {e}"
             error(msg)
             errors.append(msg)
- 
+
     if errors:
         log(f"\nCompleted with {len(errors)} error(s):")
         for e in errors:
@@ -1632,8 +1798,7 @@ def main():
         sys.exit(1)
     else:
         log("\nAll sections updated successfully ✓")
- 
- 
+
+
 if __name__ == "__main__":
     main()
- 
