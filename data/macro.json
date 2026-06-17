@@ -1,7 +1,7 @@
 {
   "category": "Macro-Economic Data",
   "description": "Key macroeconomic indicators from the ONS and Bank of England, updated monthly or quarterly.",
-  "last_fetched": "2026-06-12T08:50:30Z",
+  "last_fetched": "2026-06-17T11:26:09Z",
   "datasets": [
     {
       "id": "cpi_annual_rate",
@@ -16,13 +16,13 @@
       "status": "active",
       "latest": {
         "value": "2.8",
-        "period": "Apr 2026",
-        "fetched_at": "2026-06-12T08:50:21Z",
+        "period": "May 2026",
+        "fetched_at": "2026-06-17T11:26:02Z",
         "prev": {
-          "value": "3.3",
-          "period": "Mar 2026"
+          "value": "2.8",
+          "period": "Apr 2026"
         },
-        "trend": "down"
+        "trend": "same"
       },
       "notes": ""
     },
@@ -38,12 +38,12 @@
       "unit": "index",
       "status": "active",
       "latest": {
-        "value": "142.1",
-        "period": "Apr 2026",
-        "fetched_at": "2026-06-12T08:50:22Z",
+        "value": "142.4",
+        "period": "May 2026",
+        "fetched_at": "2026-06-17T11:26:02Z",
         "prev": {
-          "value": "141.0",
-          "period": "Mar 2026"
+          "value": "142.1",
+          "period": "Apr 2026"
         },
         "trend": "up"
       },
@@ -62,13 +62,13 @@
       "status": "active",
       "latest": {
         "value": "3.0",
-        "period": "Apr 2026",
-        "fetched_at": "2026-06-12T08:50:22Z",
+        "period": "May 2026",
+        "fetched_at": "2026-06-17T11:26:02Z",
         "prev": {
-          "value": "3.4",
-          "period": "Mar 2026"
+          "value": "3.0",
+          "period": "Apr 2026"
         },
-        "trend": "down"
+        "trend": "same"
       },
       "notes": ""
     },
@@ -84,12 +84,12 @@
       "unit": "index",
       "status": "active",
       "latest": {
-        "value": "141.8",
-        "period": "Apr 2026",
-        "fetched_at": "2026-06-12T08:50:23Z",
+        "value": "142.1",
+        "period": "May 2026",
+        "fetched_at": "2026-06-17T11:26:03Z",
         "prev": {
-          "value": "140.8",
-          "period": "Mar 2026"
+          "value": "141.8",
+          "period": "Apr 2026"
         },
         "trend": "up"
       },
@@ -107,14 +107,14 @@
       "unit": "%",
       "status": "active",
       "latest": {
-        "value": "3.5",
-        "period": "Apr 2026",
-        "fetched_at": "2026-06-12T08:50:28Z",
+        "value": "3.3",
+        "period": "May 2026",
+        "fetched_at": "2026-06-17T11:26:07Z",
         "prev": {
-          "value": "3.4",
-          "period": "Mar 2026"
+          "value": "3.5",
+          "period": "Apr 2026"
         },
-        "trend": "up"
+        "trend": "down"
       },
       "notes": "Replaces IPHRP. Sourced from the ONS PIPR monthly statistics dataset (xlsx); plausibility-checked 0.5-25%."
     },
@@ -130,12 +130,12 @@
       "unit": "index",
       "status": "active",
       "latest": {
-        "value": "123.3",
-        "period": "Apr 2026",
-        "fetched_at": "2026-06-12T08:50:28Z",
+        "value": "123.5",
+        "period": "May 2026",
+        "fetched_at": "2026-06-17T11:26:07Z",
         "prev": {
-          "value": "122.9",
-          "period": "Mar 2026"
+          "value": "123.3",
+          "period": "Apr 2026"
         },
         "trend": "up"
       },
