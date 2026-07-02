@@ -1,7 +1,7 @@
 {
   "category": "Macro-Economic Data",
   "description": "Key macroeconomic indicators from the ONS and Bank of England, updated monthly or quarterly.",
-  "last_fetched": "2026-06-30T10:22:10Z",
+  "last_fetched": "2026-07-02T09:50:30Z",
   "datasets": [
     {
       "id": "cpi_annual_rate",
@@ -200,11 +200,11 @@
       "status": "active",
       "latest": {
         "value": "3.75",
-        "period": "May 2026",
-        "fetched_at": "2026-06-12T08:50:30Z",
+        "period": "Jun 2026",
+        "fetched_at": "2026-07-02T09:50:30Z",
         "prev": {
           "value": "3.75",
-          "period": "Apr 2026"
+          "period": "May 2026"
         },
         "trend": "same"
       },
