@@ -1,7 +1,7 @@
 {
   "category": "Claims & Bailiffs",
   "description": "Landlord possession court action statistics from HM Courts & Tribunals Service (MoJ), updated quarterly.",
-  "last_fetched": "2026-06-12T08:50:44Z",
+  "last_fetched": "2026-08-15T07:20:53Z",
   "datasets": [
     {
       "id": "mlp_claims_issued",
@@ -16,12 +16,12 @@
       "unit": "claims",
       "status": "active",
       "latest": {
-        "value": "22733",
-        "period": "2026 Q1",
-        "fetched_at": "2026-06-12T08:50:44Z",
+        "value": "23635",
+        "period": "2026 Q2",
+        "fetched_at": "2026-08-15T07:20:53Z",
         "prev": {
-          "value": "21457",
-          "period": "2025 Q4"
+          "value": "22720",
+          "period": "2026 Q1"
         },
         "trend": "up"
       },
@@ -40,12 +40,12 @@
       "unit": "repossessions",
       "status": "active",
       "latest": {
-        "value": "6888",
-        "period": "2026 Q1",
-        "fetched_at": "2026-06-12T08:50:44Z",
+        "value": "6560",
+        "period": "2026 Q2",
+        "fetched_at": "2026-08-15T07:20:53Z",
         "prev": {
-          "value": "7275",
-          "period": "2025 Q4"
+          "value": "6925",
+          "period": "2026 Q1"
         },
         "trend": "down"
       },
@@ -64,12 +64,12 @@
       "unit": "claims",
       "status": "active",
       "latest": {
-        "value": "14228",
-        "period": "2026 Q1",
-        "fetched_at": "2026-06-12T08:50:44Z",
+        "value": "16186",
+        "period": "2026 Q2",
+        "fetched_at": "2026-08-15T07:20:53Z",
         "prev": {
-          "value": "13354",
-          "period": "2025 Q4"
+          "value": "14216",
+          "period": "2026 Q1"
         },
         "trend": "up"
       },
@@ -88,12 +88,12 @@
       "unit": "claims",
       "status": "active",
       "latest": {
-        "value": "6599",
-        "period": "2026 Q1",
-        "fetched_at": "2026-06-12T08:50:44Z",
+        "value": "8569",
+        "period": "2026 Q2",
+        "fetched_at": "2026-08-15T07:20:53Z",
         "prev": {
-          "value": "6489",
-          "period": "2025 Q4"
+          "value": "6597",
+          "period": "2026 Q1"
         },
         "trend": "up"
       },
@@ -112,14 +112,14 @@
       "unit": "weeks",
       "status": "active",
       "latest": {
-        "value": "12.5",
-        "period": "2026 Q1",
-        "fetched_at": "2026-06-12T08:50:44Z",
+        "value": "11.5",
+        "period": "2026 Q2",
+        "fetched_at": "2026-08-15T07:20:53Z",
         "prev": {
-          "value": "11.8",
-          "period": "2025 Q4"
+          "value": "12.5",
+          "period": "2026 Q1"
         },
-        "trend": "up"
+        "trend": "down"
       },
       "notes": "Mean weeks from landlord possession claim to order, all landlord types. Source: MoJ Tables ODS, Table 6."
     },
@@ -136,14 +136,14 @@
       "unit": "weeks",
       "status": "active",
       "latest": {
-        "value": "12.8",
-        "period": "2026 Q1",
-        "fetched_at": "2026-06-12T08:50:44Z",
+        "value": "11.1",
+        "period": "2026 Q2",
+        "fetched_at": "2026-08-15T07:20:53Z",
         "prev": {
-          "value": "11.5",
-          "period": "2025 Q4"
+          "value": "12.8",
+          "period": "2026 Q1"
         },
-        "trend": "up"
+        "trend": "down"
       },
       "notes": "Private landlord claims only. Source: MoJ Tables ODS, Data_6 breakdown."
     },
@@ -160,14 +160,14 @@
       "unit": "weeks",
       "status": "active",
       "latest": {
-        "value": "8",
-        "period": "2026 Q1",
-        "fetched_at": "2026-06-12T08:50:44Z",
+        "value": "7.6",
+        "period": "2026 Q2",
+        "fetched_at": "2026-08-15T07:20:53Z",
         "prev": {
-          "value": "7.3",
-          "period": "2025 Q4"
+          "value": "8",
+          "period": "2026 Q1"
         },
-        "trend": "up"
+        "trend": "down"
       },
       "notes": "Median weeks from landlord possession claim to order. Source: MoJ Tables ODS, Table 6."
     }
