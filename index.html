@@ -362,6 +362,18 @@
       color: #8b2000;
       font-size: 13px;
     }
+    .retry-btn {
+      background: var(--nrla-orange, #E96C19);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 0 4px;
+    }
+    .retry-btn:hover { opacity: 0.9; }
  
     /* ── Footer ────────────────────────────────────────────── */
     footer {
@@ -571,13 +583,13 @@
             <div class="card-period">${latest.period || '—'}</div>
             ${trendFromLine(latest, prefix, suffix)}`;
   }
-
+ 
   // ── Trend indicators: change vs the previous statistical release ──
   function decimalsOf(s) {
     const m = String(s).match(/\.(\d+)$/);
     return m ? m[1].length : 0;
   }
-
+ 
   function trendBadge(latest) {
     const prev = latest.prev;
     if (!prev || prev.value == null) return '';
@@ -593,7 +605,7 @@
       : (delta > 0 ? '+' : '\u2212') + (dp > 0 ? mag.toFixed(dp) : Math.round(mag).toLocaleString('en-GB'));
     return `<span class="trend-badge ${dir}" title="Change on previous release (${prev.period || 'previous period'})">${arrow} ${deltaStr}</span>`;
   }
-
+ 
   function trendFromLine(latest, prefix, suffix) {
     const prev = latest.prev;
     if (!prev || prev.value == null) return '';
@@ -682,15 +694,44 @@
   });
  
   // ── Load all data ────────────────────────────────────────
+  // Fetch with retries: rides out transient CDN/network blips and the brief
+  // window during GitHub Pages redeploys when individual files can 404.
+  async function fetchWithRetry(file, attempts = 3) {
+    let lastErr;
+    for (let i = 0; i < attempts; i++) {
+      try {
+        const res = await fetch(file + '?v=' + Date.now());
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      } catch (err) {
+        lastErr = err;
+        if (i < attempts - 1) await new Promise(r => setTimeout(r, 800 * (i + 1)));
+      }
+    }
+    throw lastErr;
+  }
+ 
+  async function retrySection(key, file) {
+    const panel = document.getElementById(`panel-${key}`);
+    panel.innerHTML = `<div class="error-state">Retrying…</div>`;
+    try {
+      const data = await fetchWithRetry(file);
+      renderPanel(key, data);
+    } catch (err) {
+      panel.innerHTML = `<div class="error-state">
+        Still could not load this section (${err.message}).
+        <button class="retry-btn" onclick="retrySection('${key}', '${file}')">Retry again</button>
+      </div>`;
+    }
+  }
+ 
   async function loadAll() {
     let mostRecent = null;
  
     await Promise.allSettled(
       DATA_FILES.map(async ({ key, file }) => {
         try {
-          const res = await fetch(file + '?v=' + Date.now());
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const data = await res.json();
+          const data = await fetchWithRetry(file);
           renderPanel(key, data);
  
           if (data.last_fetched) {
@@ -701,10 +742,11 @@
         } catch (err) {
           const panel = document.getElementById(`panel-${key}`);
           panel.innerHTML = `<div class="error-state">
-            Could not load data for this section.
-            If you're viewing this file locally, please serve it via a web server
-            (e.g. <code>python -m http.server</code> in the repo folder).
-            <br><br>Error: ${err.message}
+            This section could not be loaded (${err.message}).
+            This is usually a temporary network or hosting blip —
+            <button class="retry-btn" onclick="retrySection('${key}', '${file}')">Retry now</button>
+            or refresh the page. If viewing the file locally, serve it via a web
+            server (e.g. <code>python -m http.server</code> in the repo folder).
           </div>`;
         }
       })
@@ -730,3 +772,4 @@
 </script>
 </body>
 </html>
+ 
