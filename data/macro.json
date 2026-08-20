@@ -1,7 +1,7 @@
 {
   "category": "Macro-Economic Data",
   "description": "Key macroeconomic indicators from the ONS and Bank of England, updated monthly or quarterly.",
-  "last_fetched": "2026-08-19T07:28:10Z",
+  "last_fetched": "2026-08-20T07:31:06Z",
   "datasets": [
     {
       "id": "cpi_annual_rate",
@@ -107,14 +107,14 @@
       "unit": "%",
       "status": "active",
       "latest": {
-        "value": "3.3",
-        "period": "Jun 2026",
-        "fetched_at": "2026-07-22T09:20:33Z",
+        "value": "3.7",
+        "period": "Jul 2026",
+        "fetched_at": "2026-08-20T07:31:03Z",
         "prev": {
           "value": "3.3",
-          "period": "May 2026"
+          "period": "Jun 2026"
         },
-        "trend": "same"
+        "trend": "up"
       },
       "notes": "Replaces IPHRP. Sourced from the ONS PIPR monthly statistics dataset (xlsx); plausibility-checked 0.5-25%."
     },
@@ -130,12 +130,12 @@
       "unit": "index",
       "status": "active",
       "latest": {
-        "value": "123.9",
-        "period": "Jun 2026",
-        "fetched_at": "2026-07-22T09:20:33Z",
+        "value": "124.3",
+        "period": "Jul 2026",
+        "fetched_at": "2026-08-20T07:31:03Z",
         "prev": {
-          "value": "123.5",
-          "period": "May 2026"
+          "value": "123.9",
+          "period": "Jun 2026"
         },
         "trend": "up"
       },
