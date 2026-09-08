@@ -1,7 +1,7 @@
 {
   "category": "Macro-Economic Data",
   "description": "Key macroeconomic indicators from the ONS and Bank of England, updated monthly or quarterly.",
-  "last_fetched": "2026-09-02T11:47:39Z",
+  "last_fetched": "2026-09-08T11:49:38Z",
   "datasets": [
     {
       "id": "cpi_annual_rate",
@@ -222,14 +222,14 @@
       "unit": "£bn",
       "status": "active",
       "latest": {
-        "value": "69.6",
-        "period": "2026 Q1",
-        "fetched_at": "2026-06-12T08:50:30Z",
+        "value": "77.4",
+        "period": "2026 Q2",
+        "fetched_at": "2026-09-08T11:49:38Z",
         "prev": {
-          "value": "79.4",
-          "period": "2025 Q4"
+          "value": "69.6",
+          "period": "2026 Q1"
         },
-        "trend": "down"
+        "trend": "up"
       },
       "notes": "Residential loans to individuals, regulated + non-regulated. Sourced from FCA/BoE MLAR long-run detailed tables (Table 1.21) — the BoE IADB blocks this series."
     },
@@ -245,14 +245,14 @@
       "unit": "%",
       "status": "active",
       "latest": {
-        "value": "8.9",
-        "period": "2026 Q1",
-        "fetched_at": "2026-06-12T08:50:30Z",
+        "value": "8",
+        "period": "2026 Q2",
+        "fetched_at": "2026-09-08T11:49:38Z",
         "prev": {
-          "value": "8.4",
-          "period": "2025 Q4"
+          "value": "8.9",
+          "period": "2026 Q1"
         },
-        "trend": "up"
+        "trend": "down"
       },
       "notes": "Buy-to-let share of all residential gross advances. Source: MLAR Table 1.33 section C."
     },
