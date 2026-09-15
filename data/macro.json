@@ -1,7 +1,7 @@
 {
   "category": "Macro-Economic Data",
   "description": "Key macroeconomic indicators from the ONS and Bank of England, updated monthly or quarterly.",
-  "last_fetched": "2026-09-08T11:49:38Z",
+  "last_fetched": "2026-09-15T12:18:07Z",
   "datasets": [
     {
       "id": "cpi_annual_rate",
@@ -268,12 +268,12 @@
       "unit": "£/week",
       "status": "active",
       "latest": {
-        "value": "241.6",
-        "period": "Jun 2026",
-        "fetched_at": "2026-08-18T07:27:34Z",
+        "value": "241.9",
+        "period": "Jul 2026",
+        "fetched_at": "2026-09-15T12:18:02Z",
         "prev": {
-          "value": "240.2",
-          "period": "May 2026"
+          "value": "241.8",
+          "period": "Jun 2026"
         },
         "trend": "up"
       },
@@ -291,14 +291,14 @@
       "unit": "index",
       "status": "active",
       "latest": {
-        "value": "110.5",
-        "period": "Jun 2026",
-        "fetched_at": "2026-08-18T07:27:35Z",
+        "value": "110.0",
+        "period": "Jul 2026",
+        "fetched_at": "2026-09-15T12:18:03Z",
         "prev": {
-          "value": "110.2",
-          "period": "May 2026"
+          "value": "110.6",
+          "period": "Jun 2026"
         },
-        "trend": "up"
+        "trend": "down"
       },
       "notes": "This data series changes significantly — always verify historic values."
     },
@@ -314,14 +314,14 @@
       "unit": "%",
       "status": "active",
       "latest": {
-        "value": "1.1",
-        "period": "Jun 2026",
-        "fetched_at": "2026-08-18T07:27:35Z",
+        "value": "0.6",
+        "period": "Jul 2026",
+        "fetched_at": "2026-09-15T12:18:04Z",
         "prev": {
-          "value": "0.7",
-          "period": "May 2026"
+          "value": "1.3",
+          "period": "Jun 2026"
         },
-        "trend": "up"
+        "trend": "down"
       },
       "notes": ""
     }
