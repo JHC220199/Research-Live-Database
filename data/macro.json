@@ -1,7 +1,7 @@
 {
   "category": "Macro-Economic Data",
   "description": "Key macroeconomic indicators from the ONS and Bank of England, updated monthly or quarterly.",
-  "last_fetched": "2026-09-15T12:18:07Z",
+  "last_fetched": "2026-09-16T12:16:57Z",
   "datasets": [
     {
       "id": "cpi_annual_rate",
@@ -15,12 +15,12 @@
       "unit": "%",
       "status": "active",
       "latest": {
-        "value": "2.9",
-        "period": "Jul 2026",
-        "fetched_at": "2026-08-19T07:28:04Z",
+        "value": "3.1",
+        "period": "Aug 2026",
+        "fetched_at": "2026-09-16T12:16:23Z",
         "prev": {
-          "value": "2.6",
-          "period": "Jun 2026"
+          "value": "2.9",
+          "period": "Jul 2026"
         },
         "trend": "up"
       },
@@ -38,12 +38,12 @@
       "unit": "index",
       "status": "active",
       "latest": {
-        "value": "142.9",
-        "period": "Jul 2026",
-        "fetched_at": "2026-08-19T07:28:04Z",
+        "value": "143.6",
+        "period": "Aug 2026",
+        "fetched_at": "2026-09-16T12:16:24Z",
         "prev": {
-          "value": "142.5",
-          "period": "Jun 2026"
+          "value": "142.9",
+          "period": "Jul 2026"
         },
         "trend": "up"
       },
@@ -61,12 +61,12 @@
       "unit": "%",
       "status": "active",
       "latest": {
-        "value": "3.1",
-        "period": "Jul 2026",
-        "fetched_at": "2026-08-19T07:28:05Z",
+        "value": "3.3",
+        "period": "Aug 2026",
+        "fetched_at": "2026-09-16T12:16:24Z",
         "prev": {
-          "value": "2.8",
-          "period": "Jun 2026"
+          "value": "3.1",
+          "period": "Jul 2026"
         },
         "trend": "up"
       },
@@ -84,12 +84,12 @@
       "unit": "index",
       "status": "active",
       "latest": {
-        "value": "142.7",
-        "period": "Jul 2026",
-        "fetched_at": "2026-08-19T07:28:05Z",
+        "value": "143.4",
+        "period": "Aug 2026",
+        "fetched_at": "2026-09-16T12:16:25Z",
         "prev": {
-          "value": "142.3",
-          "period": "Jun 2026"
+          "value": "142.7",
+          "period": "Jul 2026"
         },
         "trend": "up"
       },
@@ -107,12 +107,12 @@
       "unit": "%",
       "status": "active",
       "latest": {
-        "value": "3.7",
-        "period": "Jul 2026",
-        "fetched_at": "2026-08-20T07:31:03Z",
+        "value": "3.8",
+        "period": "Aug 2026",
+        "fetched_at": "2026-09-16T12:16:29Z",
         "prev": {
-          "value": "3.3",
-          "period": "Jun 2026"
+          "value": "3.7",
+          "period": "Jul 2026"
         },
         "trend": "up"
       },
@@ -130,12 +130,12 @@
       "unit": "index",
       "status": "active",
       "latest": {
-        "value": "124.3",
-        "period": "Jul 2026",
-        "fetched_at": "2026-08-20T07:31:03Z",
+        "value": "124.9",
+        "period": "Aug 2026",
+        "fetched_at": "2026-09-16T12:16:29Z",
         "prev": {
-          "value": "123.9",
-          "period": "Jun 2026"
+          "value": "124.3",
+          "period": "Jul 2026"
         },
         "trend": "up"
       },
